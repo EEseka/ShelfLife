@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -14,21 +13,28 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            // NutriSport exported Notifier here, we can do the same if needed later
+            // export(project(":shared"))
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.core.splashscreen)
+
+            // Needed to start the Koin graph in the Application class
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -37,11 +43,15 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+
+            // --- The Modular Connection ---
+            implementation(project(":shared"))
+            implementation(project(":di"))
+            implementation(project(":navigation"))
+
+            // FUTURE: When you create them, you will uncomment these:
+            // implementation(project(":feature:auth"))
+            // implementation(project(":core:data"))
         }
     }
 }
@@ -76,4 +86,3 @@ android {
 dependencies {
     debugImplementation(compose.uiTooling)
 }
-
