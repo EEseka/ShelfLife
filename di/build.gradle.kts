@@ -38,7 +38,11 @@ kotlin {
 
             implementation(libs.ktor.client.core) // to create http client factory
 
+            implementation(libs.datastore) // to create datastore in specific platform
+            implementation(libs.datastore.preferences) // to create datastore in specific platform
+
             implementation(project(":shared"))
+            implementation(project(":feature:onboarding"))
         }
     }
 }

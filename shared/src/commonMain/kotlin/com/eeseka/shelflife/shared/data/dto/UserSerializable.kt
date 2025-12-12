@@ -5,9 +5,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UserSerializable(
     val id: String,
-    val email: String,
-    val firstname: String,
-    val lastname: String,
+    // Nullable fields allow this one class to handle both Guest and Auth users
+    val email: String? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
     val isAnonymous: Boolean = false,
     val profilePictureUrl: String? = null
 )

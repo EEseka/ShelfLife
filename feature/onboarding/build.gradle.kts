@@ -20,7 +20,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "navigation"
+            baseName = "onboarding"
             isStatic = true
         }
     }
@@ -34,19 +34,20 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-//            implementation(libs.androidx.lifecycle.viewmodel)
-//            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.bundles.koin.common)
-            implementation(libs.jetbrains.compose.navigation)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+
+            implementation(libs.compose.lottie.animations)
+
+            implementation(libs.jetbrains.compose.backhandler)
 
             implementation(project(":shared"))
-            implementation(project(":feature:onboarding"))
         }
     }
 }
 
 android {
-    namespace = "com.eeseka.shelflife.navigation"
+    namespace = "com.eeseka.shelflife.onboarding"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="stop_wasting_money">Stop Wasting Money</string>
+    <string name="track_your_food">Track your food and reduce waste by eating what you buy.</string>
+    <string name="scan_and_forget">Scan &amp; Forget</string>
+    <string name="instantly_add_items_with_the_barcode_scanner_we_handle_the_details">Instantly add items with the barcode scanner. We handle the details.</string>
+    <string name="never_miss_a_date">Never Miss a Date</string>
+    <string name="get_notified_before_your_food_expires_so_you_can_cook_it_in_time">Get notified before your food expires so you can cook it in time.</string>
+    <string name="get_started">Get Started</string>
+    <string name="next">Next</string>
+</resources>

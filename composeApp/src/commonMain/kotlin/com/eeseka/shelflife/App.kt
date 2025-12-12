@@ -1,42 +1,49 @@
 package com.eeseka.shelflife
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.eeseka.shelflife.navigation.SetUpNavGraph
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
+import com.eeseka.shelflife.shared.domain.settings.AppTheme
+import com.eeseka.shelflife.shared.presentation.MainViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun App() {
-    ShelfLifeTheme {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = "Does the theme work?",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Spacer(modifier = Modifier.height(50.dp))
-            Text(
-                text = "It does!",
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+fun App(
+    onAuthenticationChecked: () -> Unit = {},
+    viewModel: MainViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    val isDarkTheme = when (state.theme) {
+        AppTheme.SYSTEM -> isSystemInDarkTheme()
+        AppTheme.LIGHT -> false
+        AppTheme.DARK -> true
+    }
+    val startDestination = state.startDestination
+
+    LaunchedEffect(state.isCheckingAuth) {
+        if (!state.isCheckingAuth) {
+            onAuthenticationChecked()
+        }
+    }
+
+    ShelfLifeTheme(darkTheme = isDarkTheme) {
+        if (!state.isCheckingAuth && startDestination != null) {
+            AnimatedVisibility(
+                modifier = Modifier.fillMaxSize(),
+                visible = true, // It enters once, then stays
+                enter = fadeIn()
+            ) {
+                SetUpNavGraph(startDestination = startDestination)
+            }
         }
     }
 }

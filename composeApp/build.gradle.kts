@@ -44,6 +44,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.bundles.koin.common)
+
             // --- The Modular Connection ---
             implementation(project(":shared"))
             implementation(project(":di"))

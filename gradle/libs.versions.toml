@@ -9,6 +9,7 @@ android-targetSdk = "36"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"
 composeMultiplatform = "1.9.3"
+material-icons = "1.7.3"
 
 # --- AndroidX ---
 androidx-activity = "1.12.1"
@@ -32,6 +33,7 @@ kotlinx-datetime = "0.7.1"
 kermit = "2.0.8"             # [ADDED] For Logging
 adaptive = "1.2.0"
 moko = "0.20.1"              # [ADDED] For Permissions
+compottie = "2.0.2"          # [ADDED] For Lottie Animations
 
 # --- UI & Hardware ---
 coil = "3.3.0"
@@ -79,11 +81,19 @@ material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adapti
 material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
 material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
 
-# DataStore (Settings)
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
+# Icons
+jetbrains-compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "material-icons" }
 
-# Navigation
+# Lottie Animations
+compose-lottie-animations = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+
+# DataStore (Settings)
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# Navigation and backhandler
 jetbrains-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation" }
+jetbrains-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
 
 # --- UI & Hardware ---
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
@@ -92,7 +102,7 @@ peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmp-notifier" }
 
-#Permission handling
+# Permission handling
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
 moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
 moko-permissions-notifications = { module = "dev.icerock.moko:permissions-notifications", version.ref = "moko" }

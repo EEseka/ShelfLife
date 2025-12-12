@@ -64,10 +64,15 @@ kotlin {
 
             // --- Data & State ---
             implementation(libs.kotlinx.coroutines.core)
+
             implementation(libs.kotlinx.datetime)
             implementation(libs.touchlab.kermit)
-            implementation(libs.androidx.datastore.preferences)
+
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
+
             implementation(libs.jetbrains.compose.navigation)
+
             implementation(libs.material3.adaptive)
 
             // --- Database (Room) ---
