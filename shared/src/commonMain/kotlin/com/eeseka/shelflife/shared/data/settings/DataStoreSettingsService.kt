@@ -11,16 +11,16 @@ import com.eeseka.shelflife.shared.data.mappers.toSerializable
 import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.settings.AppTheme
-import com.eeseka.shelflife.shared.domain.settings.SettingsRepository
+import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
-class DataStoreSettingsRepository(
+class DataStoreSettingsService(
     private val shelfLifeLogger: ShelfLifeLogger,
     private val dataStore: DataStore<Preferences>
-) : SettingsRepository {
-    companion object {
+) : SettingsService {
+    companion object Companion {
         // Key strings
         private const val KEY_THEME_STRING = "app_theme"
         private const val KEY_HAS_SEEN_ONBOARDING_STRING = "has_seen_onboarding"
@@ -63,6 +63,7 @@ class DataStoreSettingsRepository(
                 json.decodeFromString<UserSerializable>(userJson).toDomain()
             } catch (e: Exception) {
                 // If JSON format changes in future update, don't crash the app. Just return null.
+                // This also handles cases where user data is corrupted.
                 // TODO: Log to crash reporting (e.g., Firebase Crashlytics)
                 shelfLifeLogger.warn("Error decoding user cache: ${e.message}")
                 null
@@ -88,8 +89,13 @@ class DataStoreSettingsRepository(
                 // Logout Scenario: Clear the cache
                 prefs.remove(KEY_USER_CACHE)
             } else {
-                val dto = user.toSerializable()
-                prefs[KEY_USER_CACHE] = json.encodeToString(dto)
+                try {
+                    val dto = user.toSerializable()
+                    prefs[KEY_USER_CACHE] = json.encodeToString(dto)
+                } catch (e: Exception) {
+                    // Log serialization errors but don't crash
+                    shelfLifeLogger.error("Error serializing user: ${e.message}", e)
+                }
             }
         }
     }

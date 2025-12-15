@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.eeseka.shelflife.auth.presentation.AuthAction
+import com.eeseka.shelflife.auth.presentation.AuthScreen
+import com.eeseka.shelflife.auth.presentation.AuthViewModel
 import com.eeseka.shelflife.onboarding.presentation.OnboardingScreen
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
 import com.eeseka.shelflife.shared.navigation.Screen
@@ -27,6 +31,19 @@ fun SetUpNavGraph(
 ) {
     val navController = rememberNavController()
 
+    LaunchedEffect(startDestination) {
+        startDestination.let { destination ->
+            if (navController.currentBackStackEntry?.destination?.route != destination::class.qualifiedName) {
+                navController.navigate(destination) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -34,17 +51,22 @@ fun SetUpNavGraph(
         composable<Screen.Onboarding> {
             val viewModel = koinViewModel<OnboardingViewModel>()
             OnboardingScreen(
-                onAction = viewModel::onAction,
-                navigateToAuth = {
-                    navController.navigate(Screen.Auth) {
-                        popUpTo(Screen.Onboarding) { inclusive = true }
-                    }
-                }
+                onAction = viewModel::onAction
             )
         }
 
         composable<Screen.Auth> {
-            PlaceholderScreen("Auth Screen\n(Login/Signup goes here)")
+            val viewModel = koinViewModel<AuthViewModel>()
+            AuthScreen(
+                onAction = viewModel::onAction,
+                events = viewModel.events,
+                onGoogleSignInSuccess = {
+                    viewModel.onAction(AuthAction.OnGoogleSignInSuccess(it))
+                },
+                onGoogleSignInFailure = {
+                    viewModel.onAction(AuthAction.OnGoogleSignInFailure(it))
+                }
+            )
         }
 
         composable<Screen.HomeGraph> {

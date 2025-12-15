@@ -4,6 +4,7 @@ agp = "8.13.0"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "36"
+buildkonfig = "0.17.1"       # [ADDED] For secure API keys
 
 # --- Kotlin & Core ---
 kotlin = "2.2.21"
@@ -40,6 +41,13 @@ coil = "3.3.0"
 peekaboo = "0.5.2"
 camerax = "1.5.2"
 kmp-notifier = "1.6.0"
+
+# --- Auth ---
+auth = "2.3.1"
+
+# --- Firebase ---
+firebase = "2.4.0"
+google = "4.4.4"
 
 [libraries]
 # --- Kotlin ---
@@ -87,6 +95,17 @@ jetbrains-compose-material-icons-extended = { module = "org.jetbrains.compose.ma
 # Lottie Animations
 compose-lottie-animations = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 
+# Auth
+auth-google-kmp = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "auth" }
+auth-firebase-kmp = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "auth" }
+
+# Firebase
+firebase-app = { module = "dev.gitlive:firebase-app", version.ref = "firebase" }
+firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase" }
+firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase" }
+firebase-storage = { module = "dev.gitlive:firebase-storage", version.ref = "firebase" }
+firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "firebase" }
+
 # DataStore (Settings)
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
@@ -119,6 +138,8 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google" }
 
 [bundles]
 koin-common = [

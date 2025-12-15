@@ -54,8 +54,7 @@ private const val ANIMATION_NOTIFICATION = "notification.json"
 @OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun OnboardingScreen(
-    onAction: (OnboardingAction) -> Unit,
-    navigateToAuth: () -> Unit
+    onAction: (OnboardingAction) -> Unit
 ) {
     val config = currentDeviceConfiguration()
 
@@ -99,7 +98,7 @@ fun OnboardingScreen(
             } else {
                 isProcessing = true
                 onAction(OnboardingAction.OnGetStartedClick)
-                navigateToAuth()
+                // Navigation will happen automatically via MainViewModel's reactive state
             }
         }
     }
@@ -185,8 +184,7 @@ fun OnboardingScreen(
 fun OnboardingScreenPreview() {
     ShelfLifeTheme {
         OnboardingScreen(
-            onAction = {},
-            navigateToAuth = {}
+            onAction = {}
         )
     }
 }

@@ -1,4 +1,7 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +11,40 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)  // Needed for Room
     alias(libs.plugins.room) // Needed for Room
+    alias(libs.plugins.buildkonfig) // Storing secrets in local.properties
+}
+
+// --- 1. SECURELY READ THE KEY ---
+val localProperties = Properties()
+val localFile = rootProject.file("local.properties")
+if (localFile.exists()) {
+    localProperties.load(localFile.inputStream())
+}
+
+// Try to get from local.properties, fallback to System Environment (good for CI/CD)
+val webClientId: String = localProperties.getProperty("WEB_CLIENT_ID")
+    ?: System.getenv("WEB_CLIENT_ID")
+    ?: "MISSING_API_KEY"
+
+// --- 2. GENERATE THE CONFIG ---
+buildkonfig {
+    packageName = "com.eeseka.shelflife"
+    objectName = "AppConfig"
+    exposeObjectWithName = "AppConfig"
+
+    defaultConfigs {
+        // BuildKonfig handles the quotes for Strings automatically
+        buildConfigField(STRING, "WEB_CLIENT_ID", webClientId)
+    }
+    // Debug builds
+    defaultConfigs("debug") {
+        buildConfigField(BOOLEAN, "IS_DEBUG", "true")
+    }
+
+    // Release builds
+    defaultConfigs("release") {
+        buildConfigField(BOOLEAN, "IS_DEBUG", "false")
+    }
 }
 
 kotlin {
@@ -55,6 +92,9 @@ kotlin {
             // --- Architecture ---
             implementation(libs.bundles.koin.common)
             implementation(libs.bundles.ktor.common)
+
+            // --- Firebase ---
+            implementation(libs.firebase.auth)
 
             // --- Capabilities (ShelfLife Stack) ---
             implementation(libs.coil.compose)

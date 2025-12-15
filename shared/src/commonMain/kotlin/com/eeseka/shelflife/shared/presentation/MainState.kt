@@ -1,6 +1,7 @@
 package com.eeseka.shelflife.shared.presentation
 
 import androidx.compose.runtime.Immutable
+import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.settings.AppTheme
 import com.eeseka.shelflife.shared.navigation.Screen
 

@@ -47,5 +47,3 @@ fun App(
         }
     }
 }
-
-// don't forget to remove the Preview dependencies since we might not have any previews in commonMain

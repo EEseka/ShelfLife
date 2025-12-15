@@ -10,8 +10,7 @@ sealed interface User {
     data class Authenticated(
         override val id: String,
         val email: String,
-        val firstName: String,
-        val lastName: String,
+        val fullName: String,
         val profilePictureUrl: String? = null
     ) : User
 }

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -45,6 +46,10 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(libs.bundles.koin.common)
+
+            // Needed for some app auth initializations
+            implementation(libs.auth.google.kmp)
+            implementation(libs.firebase.app)
 
             // --- The Modular Connection ---
             implementation(project(":shared"))

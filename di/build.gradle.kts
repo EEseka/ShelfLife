@@ -43,6 +43,7 @@ kotlin {
 
             implementation(project(":shared"))
             implementation(project(":feature:onboarding"))
+            implementation(project(":feature:auth"))
         }
     }
 }

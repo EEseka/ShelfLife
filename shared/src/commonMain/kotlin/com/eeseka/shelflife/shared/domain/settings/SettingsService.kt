@@ -3,7 +3,7 @@ package com.eeseka.shelflife.shared.domain.settings
 import com.eeseka.shelflife.shared.domain.auth.User
 import kotlinx.coroutines.flow.Flow
 
-interface SettingsRepository {
+interface SettingsService {
     val theme: Flow<AppTheme>
     val hasSeenOnboarding: Flow<Boolean>
     val cachedUser: Flow<User?>

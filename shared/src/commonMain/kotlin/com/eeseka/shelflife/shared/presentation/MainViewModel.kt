@@ -2,54 +2,52 @@ package com.eeseka.shelflife.shared.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eeseka.shelflife.shared.domain.settings.SettingsRepository
+import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.navigation.Screen
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class MainViewModel(
-    settingsRepository: SettingsRepository
+    private val authService: AuthService,
+    private val settingsRepository: SettingsService
 ) : ViewModel() {
-    private val _state = MutableStateFlow(MainState())
 
-    // Combine local state with the 3 streams from DataStore
+    init {
+        authService.authState
+            .onEach { firebaseUser ->
+                settingsRepository.saveUser(firebaseUser)
+            }
+            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            authService.validateSession()
+        }
+    }
+
     val state = combine(
-        _state,
+        settingsRepository.cachedUser,
         settingsRepository.theme,
-        settingsRepository.hasSeenOnboarding,
-        settingsRepository.cachedUser
-    ) { state, theme, hasSeenOnboarding, user ->
+        settingsRepository.hasSeenOnboarding
+    ) { cachedUser, theme, hasSeenOnboarding ->
 
         val destination = when {
             !hasSeenOnboarding -> Screen.Onboarding
-            user != null -> Screen.HomeGraph
+            cachedUser != null -> Screen.HomeGraph
             else -> Screen.Auth
         }
 
-        state.copy(
+        MainState(
             isCheckingAuth = false,
             theme = theme,
             startDestination = destination
         )
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = MainState()
-        )
-
-    // In MainViewModel's init block or onStart
-//    fun startMonitoringAuth() {
-//        // This runs in the background FOREVER while the app is open
-//        firebaseAuth.authState.collect { firebaseUser ->
-//            if (firebaseUser == null && settingsRepository.cachedUser.value != null) {
-//                // ALARM! Cache thinks we are logged in, but Firebase says NO.
-//                // Kick them out.
-//                settingsRepository.saveUser(null)
-//                // The state.combine logic automatically sees 'null' and switches screen to Auth
-//            }
-//        }
-//    }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = MainState()
+    )
 }

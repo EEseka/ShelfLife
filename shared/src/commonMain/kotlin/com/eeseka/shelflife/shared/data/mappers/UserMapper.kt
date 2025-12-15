@@ -12,8 +12,7 @@ fun UserSerializable.toDomain(): User {
         User.Authenticated(
             id = id,
             email = email ?: "",
-            firstName = firstName ?: "",
-            lastName = lastName ?: "",
+            fullName = fullName ?: "",
             profilePictureUrl = profilePictureUrl
         )
     }
@@ -29,8 +28,7 @@ fun User.toSerializable(): UserSerializable {
         is User.Authenticated -> UserSerializable(
             id = id,
             email = email,
-            firstName = firstName,
-            lastName = lastName,
+            fullName = fullName,
             profilePictureUrl = profilePictureUrl,
             isAnonymous = false
         )

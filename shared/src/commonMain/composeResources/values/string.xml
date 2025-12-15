@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_request_timeout">The request took too long. Please try again.</string>
+    <string name="error_server">Our servers are having trouble. Please try again later.</string>
+    <string name="error_unknown_remote">An unexpected error occurred.</string>
+
+    <string name="error_unauthorized">Invalid email or password.</string>
+    <string name="error_conflict">An account with this email already exists.</string>
+    <string name="error_forbidden">For security, please log out and log in again to perform this action.</string>
+
+    <string name="error_not_found_remote">We couldn\'t find a product with that barcode.</string>
+    <string name="error_bad_request">Something went wrong with the request.</string>
+    <string name="error_too_many_requests">You are scanning too fast! Please wait a moment.</string>
+    <string name="error_serialization">Received invalid data from the server.</string>
+
+    <string name="error_disk_full">Device storage is full. Cannot save item.</string>
+    <string name="error_not_found_local">Item not found in your pantry.</string>
+    <string name="error_unknown_local">A local database error occurred.</string>
+</resources>
