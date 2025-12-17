@@ -12,4 +12,13 @@ sealed interface Screen {
 
     @Serializable
     data object HomeGraph : Screen
+
+    @Serializable
+    data object Pantry : Screen
+
+    @Serializable
+    data object Insights : Screen
+
+    @Serializable
+    data object Settings : Screen
 }

@@ -37,7 +37,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation(libs.compose.lottie.animations) // Might need
+            implementation(libs.compose.lottie.animations)
 
             implementation(libs.auth.firebase.kmp)
             implementation(libs.auth.google.kmp)

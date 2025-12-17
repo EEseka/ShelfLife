@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.eeseka.shelflife.auth.presentation.AuthAction
 import com.eeseka.shelflife.auth.presentation.AuthScreen
 import com.eeseka.shelflife.auth.presentation.AuthViewModel
+import com.eeseka.shelflife.main.presentation.MainScreen
 import com.eeseka.shelflife.onboarding.presentation.OnboardingScreen
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
 import com.eeseka.shelflife.shared.navigation.Screen
@@ -70,37 +71,8 @@ fun SetUpNavGraph(
         }
 
         composable<Screen.HomeGraph> {
-            PlaceholderScreen("Home Graph\n(Pantry/Scanner goes here)")
+            // Contains its own NavHost
+            MainScreen()
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(text: String) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Does the theme work?",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(
-            text = "It does!",
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        Spacer(modifier = Modifier.height(50.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
     }
 }

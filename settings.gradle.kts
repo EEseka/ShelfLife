@@ -28,6 +28,7 @@ dependencyResolutionManagement {
     }
 }
 include(":feature:auth")
+include(":feature:main")
 
 include(":feature:onboarding")
 include(":di")
