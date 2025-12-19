@@ -2,6 +2,7 @@ package com.eeseka.shelflife.di
 
 import com.eeseka.shelflife.auth.presentation.AuthViewModel
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
+import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.auth.FirebaseAuthService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
 import com.eeseka.shelflife.shared.data.settings.DataStoreSettingsService
@@ -31,6 +32,9 @@ val sharedModule = module {
 
     // Feature: Auth module
     viewModelOf(::AuthViewModel)
+
+    // Feature: Settings module
+    viewModelOf(::SettingsViewModel)
 }
 
 expect val platformModule: Module

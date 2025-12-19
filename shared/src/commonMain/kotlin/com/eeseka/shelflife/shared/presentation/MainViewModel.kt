@@ -3,6 +3,7 @@ package com.eeseka.shelflife.shared.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.navigation.Screen
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,13 +15,13 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val authService: AuthService,
-    private val settingsRepository: SettingsService
+    private val settingsService: SettingsService
 ) : ViewModel() {
 
     init {
         authService.authState
             .onEach { firebaseUser ->
-                settingsRepository.saveUser(firebaseUser)
+                settingsService.saveUser(firebaseUser)
             }
             .launchIn(viewModelScope)
         viewModelScope.launch {
@@ -29,9 +30,9 @@ class MainViewModel(
     }
 
     val state = combine(
-        settingsRepository.cachedUser,
-        settingsRepository.theme,
-        settingsRepository.hasSeenOnboarding
+        settingsService.cachedUser,
+        settingsService.theme,
+        settingsService.hasSeenOnboarding
     ) { cachedUser, theme, hasSeenOnboarding ->
 
         val destination = when {

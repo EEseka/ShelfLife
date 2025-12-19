@@ -31,6 +31,7 @@ include(":feature:auth")
 include(":feature:main")
 
 include(":feature:onboarding")
+include(":feature:settings")
 include(":di")
 include(":navigation")
 include(":composeApp")

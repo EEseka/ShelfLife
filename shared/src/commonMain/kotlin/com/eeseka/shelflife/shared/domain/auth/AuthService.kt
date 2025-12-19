@@ -11,4 +11,5 @@ interface AuthService {
     suspend fun signInAnonymously(): Result<User.Guest, DataError.Remote>
     suspend fun signOut(): EmptyResult<DataError.Local>
     suspend fun deleteAccount(): EmptyResult<DataError.Remote>
+    suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Remote>
 }

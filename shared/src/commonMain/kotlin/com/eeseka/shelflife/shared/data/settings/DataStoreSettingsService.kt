@@ -5,12 +5,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.eeseka.shelflife.shared.data.dto.NotificationPreferencesSerializable
 import com.eeseka.shelflife.shared.data.dto.UserSerializable
 import com.eeseka.shelflife.shared.data.mappers.toDomain
 import com.eeseka.shelflife.shared.data.mappers.toSerializable
 import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.settings.AppTheme
+import com.eeseka.shelflife.shared.domain.settings.NotificationPreferences
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,11 +27,14 @@ class DataStoreSettingsService(
         private const val KEY_THEME_STRING = "app_theme"
         private const val KEY_HAS_SEEN_ONBOARDING_STRING = "has_seen_onboarding"
         private const val KEY_USER_CACHE_STRING = "user_cache_json"
+        private const val KEY_NOTIFICATION_PREFERENCES_STRING = "notification_preferences"
 
         // Preference keys
         private val KEY_THEME = stringPreferencesKey(KEY_THEME_STRING)
         private val KEY_HAS_SEEN_ONBOARDING = booleanPreferencesKey(KEY_HAS_SEEN_ONBOARDING_STRING)
         private val KEY_USER_CACHE = stringPreferencesKey(KEY_USER_CACHE_STRING)
+        private val KEY_NOTIFICATION_PREFERENCES =
+            stringPreferencesKey(KEY_NOTIFICATION_PREFERENCES_STRING)
     }
 
     // JSON Config (Lenient is safer for future-proofing)
@@ -70,6 +75,21 @@ class DataStoreSettingsService(
             }
         }
     }
+    override val notificationPreferences: Flow<NotificationPreferences> =
+        dataStore.data.map { prefs ->
+            val jsonString = prefs[KEY_NOTIFICATION_PREFERENCES]
+            if (jsonString.isNullOrBlank()) {
+                NotificationPreferences()
+            } else {
+                try {
+                    json.decodeFromString<NotificationPreferencesSerializable>(jsonString)
+                        .toDomain()
+                } catch (e: Exception) {
+                    shelfLifeLogger.error("Error decoding notification prefs: ${e.message}", e)
+                    NotificationPreferences()
+                }
+            }
+        }
 
     override suspend fun setTheme(theme: AppTheme) {
         dataStore.edit { prefs ->
@@ -93,9 +113,19 @@ class DataStoreSettingsService(
                     val dto = user.toSerializable()
                     prefs[KEY_USER_CACHE] = json.encodeToString(dto)
                 } catch (e: Exception) {
-                    // Log serialization errors but don't crash
                     shelfLifeLogger.error("Error serializing user: ${e.message}", e)
                 }
+            }
+        }
+    }
+
+    override suspend fun setNotificationPreferences(preferences: NotificationPreferences) {
+        dataStore.edit { prefs ->
+            try {
+                val dto = preferences.toSerializable()
+                prefs[KEY_NOTIFICATION_PREFERENCES] = json.encodeToString(dto)
+            } catch (e: Exception) {
+                shelfLifeLogger.error("Error serializing notification prefs: ${e.message}", e)
             }
         }
     }

@@ -34,6 +34,8 @@ import com.eeseka.shelflife.onboarding.presentation.components.OnboardingControl
 import com.eeseka.shelflife.onboarding.presentation.components.OnboardingPageContent
 import com.eeseka.shelflife.onboarding.presentation.model.OnboardingPageUi
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
+import com.eeseka.shelflife.shared.presentation.permissions.Permission
+import com.eeseka.shelflife.shared.presentation.permissions.rememberPermissionController
 import com.eeseka.shelflife.shared.presentation.util.DeviceConfiguration
 import com.eeseka.shelflife.shared.presentation.util.currentDeviceConfiguration
 import kotlinx.coroutines.launch
@@ -57,6 +59,8 @@ fun OnboardingScreen(
     onAction: (OnboardingAction) -> Unit
 ) {
     val config = currentDeviceConfiguration()
+
+    val permissionController = rememberPermissionController()
 
     val pages = listOf(
         OnboardingPageUi(
@@ -97,8 +101,14 @@ fun OnboardingScreen(
                 }
             } else {
                 isProcessing = true
-                onAction(OnboardingAction.OnGetStartedClick)
-                // Navigation will happen automatically via MainViewModel's reactive state
+                scope.launch {
+                    runCatching {
+                        permissionController.requestPermission(Permission.NOTIFICATIONS)
+                    }
+                    // Navigate REGARDLESS of the outcome or crash above.
+                    // Navigation will happen automatically via MainViewModel's reactive state
+                    onAction(OnboardingAction.OnGetStartedClick)
+                }
             }
         }
     }

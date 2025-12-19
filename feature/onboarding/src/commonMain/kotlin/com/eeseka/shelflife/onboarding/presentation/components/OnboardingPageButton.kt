@@ -24,9 +24,7 @@ fun OnboardingPageButton(
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(28.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = text,

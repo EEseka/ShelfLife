@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="settings">Settings</string>
+    <string name="general">General</string>
+    <string name="data">Data</string>
+    <string name="ok">Ok</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="internet_connection_unavailable">Internet connection unavailable.</string>
+    <string name="sign_in_canceled">Sign in canceled.</string>
+    <string name="account_disabled">Your account has been disabled. Please contact support for assistance.</string>
+    <string name="account_in_use_by_another_account">This account is already in use by another account.</string>
+    <string name="unknown_error_occurred">Unknown error occurred.</string>
+    <string name="auth_success">Account upgraded successfully!</string>
+    <string name="notification_permission_required">Notifications Permission Required</string>
+    <string name="to_continue_please_grant_permission_in_app_settings">To enable notifications, please grant permission in app settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="signing_out">Signing out...</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_with_question_mark">Sign Out?</string>
+    <string name="sign_out_question">Are you sure you want to sign out?</string>
+    <string name="delete">Delete</string>
+    <string name="delete_account_with_question_mark">Delete Account?</string>
+    <string name="delete_account_question">Permanently delete account and data. Cannot be undone.</string>
+    <string name="reset">Reset</string>
+    <string name="reset_app_with_question_mark">Reset App?</string>
+    <string name="reset_app_question">This will wipe all local data. Cannot be undone.</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="deleting_account">Deleting account...</string>
+    <string name="resetting">Resetting...</string>
+    <string name="clear_all_data_and_reset">Clear all data and reset</string>
+    <string name="guest_mode">Guest Mode</string>
+    <string name="sign_in_to_sync_your_pantry">Sign in to sync your pantry</string>
+    <string name="link">Link</string>
+    <string name="app_theme">App Theme</string>
+    <string name="system">System</string>
+    <string name="light">Light</string>
+    <string name="dark">Dark</string>
+    <string name="expiry_notifications">Expiry Notifications</string>
+    <string name="sync_inactive">Inactive (Local)</string>
+    <string name="sync_active">Active</string>
+    <string name="sync_paused">Paused (Offline)</string>
+    <string name="sync_status">Sync Status</string>
+    <string name="export_data">Export Data</string>
+    <string name="time_am">AM</string>
+    <string name="time_pm">PM</string>
+</resources>

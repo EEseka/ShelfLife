@@ -20,7 +20,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "main"
+            baseName = "settings"
             isStatic = true
         }
     }
@@ -34,20 +34,26 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            implementation(libs.kotlinx.datetime)
+
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
+
             implementation(libs.jetbrains.compose.material.icons.extended)
 
-            implementation(libs.jetbrains.compose.navigation)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor)
 
-            implementation(libs.bundles.koin.common)
+            implementation(libs.auth.firebase.kmp)
+            implementation(libs.auth.google.kmp)
 
             implementation(project(":shared"))
-            implementation(project(":feature:settings"))
         }
     }
 }
 
 android {
-    namespace = "com.eeseka.shelflife.main"
+    namespace = "com.eeseka.shelflife.settings"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {

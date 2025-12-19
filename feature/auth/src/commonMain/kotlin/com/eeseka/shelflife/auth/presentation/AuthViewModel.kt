@@ -47,11 +47,6 @@ class AuthViewModel(
         }
     }
 
-    /**
-     * Handles successful Google Sign In.
-     * The user is already authenticated in Firebase at this point,
-     * so we just send a success event. MainViewModel will handle caching.
-     */
     private fun handleGoogleSignInSuccess(user: User.Authenticated?) {
         viewModelScope.launch {
             if (user != null) {

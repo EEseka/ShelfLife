@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,19 +28,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.eeseka.shelflife.main.domain.BottomNavigationItem
+import com.eeseka.shelflife.settings.presentation.SettingsScreen
+import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.util.PlatformUtils
 import com.eeseka.shelflife.shared.navigation.Screen
 import com.eeseka.shelflife.shared.presentation.util.DeviceConfiguration
 import com.eeseka.shelflife.shared.presentation.util.currentDeviceConfiguration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * No-ripple interaction source for iOS to provide native feel
@@ -125,6 +131,7 @@ fun MainScreen() {
                         label = {
                             Text(
                                 text = item.title.asString(),
+                                style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 softWrap = false
@@ -136,32 +143,20 @@ fun MainScreen() {
                     )
                 }
             }
-            NavHost(
+            NavigationHost(
                 navController = navController,
-                startDestination = Screen.Pantry,
                 modifier = Modifier.weight(1f).fillMaxHeight()
-            ) {
-                composable<Screen.Pantry> {
-                    // REPLACE with PantryScreen() which uses ShelfLifeScaffold internally
-                    PlaceholderScreen("Pantry")
-                }
-                composable<Screen.Insights> {
-                    // REPLACE with InsightsScreen() which uses ShelfLifeScaffold internally
-                    PlaceholderScreen("Insights")
-                }
-                composable<Screen.Settings> {
-                    // REPLACE with SettingsScreen() which uses ShelfLifeScaffold internally
-                    PlaceholderScreen("Settings")
-                }
-            }
+            )
         }
     } else {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
                 NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 0.dp
+                    // iOS: Force 84dp (Matches native visual height, overrides safe area expansion)
+                    // Android: Default (Let the system handle 3-button vs Gesture nav)
+                    modifier = if (isIos) Modifier.height(84.dp) else Modifier,
+                    containerColor = MaterialTheme.colorScheme.surface
                 ) {
                     BottomNavigationItem.entries.forEach { item ->
                         val isSelected = currentDestination?.hierarchy?.any {
@@ -185,7 +180,15 @@ fun MainScreen() {
                                     contentDescription = item.title.asString()
                                 )
                             },
-                            label = { Text(text = item.title.asString()) },
+                            label = {
+                                Text(
+                                    text = item.title.asString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = false
+                                )
+                            },
                             colors = navBarItemColors,
                             // Remove ripple for iOS to achieve native feel
                             interactionSource = if (isIos) remember { NoRippleInteractionSource() } else null
@@ -194,21 +197,39 @@ fun MainScreen() {
                 }
             }
         ) { innerPadding ->
-            NavHost(
+            NavigationHost(
                 navController = navController,
-                startDestination = Screen.Pantry,
                 modifier = Modifier.padding(innerPadding)
-            ) {
-                composable<Screen.Pantry> {
-                    PlaceholderScreen("Pantry")
-                }
-                composable<Screen.Insights> {
-                    PlaceholderScreen("Insights")
-                }
-                composable<Screen.Settings> {
-                    PlaceholderScreen("Settings")
-                }
-            }
+            )
+        }
+    }
+}
+
+@Composable
+fun NavigationHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Pantry,
+        modifier = modifier
+    ) {
+        composable<Screen.Pantry> {
+            PlaceholderScreen("Pantry")
+        }
+        composable<Screen.Insights> {
+            PlaceholderScreen("Insights")
+        }
+        composable<Screen.Settings> {
+            val viewModel = koinViewModel<SettingsViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            SettingsScreen(
+                state = state,
+                events = viewModel.events,
+                onAction = viewModel::onAction
+            )
         }
     }
 }

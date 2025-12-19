@@ -1,6 +1,20 @@
 package com.eeseka.shelflife.shared.presentation.permissions
 
 import androidx.compose.runtime.Composable
-//
-//@Composable
-//expect fun rememberPermissionController(): PermissionController
+import androidx.compose.runtime.remember
+import dev.icerock.moko.permissions.compose.BindEffect
+import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+
+@Composable
+fun rememberPermissionController(): PermissionController {
+    val factory = rememberPermissionsControllerFactory()
+    val mokoController = remember {
+        factory.createPermissionsController()
+    }
+
+    BindEffect(mokoController)
+
+    return remember {
+        PermissionController(mokoController)
+    }
+}

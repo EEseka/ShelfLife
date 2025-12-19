@@ -44,9 +44,7 @@ private const val ANIMATION_GROCERY_BAG = "grocery_delivery.json"
 @Composable
 fun AuthScreen(
     onAction: (AuthAction) -> Unit,
-    events: Flow<AuthEvent>,
-    onGoogleSignInSuccess: (user: User.Authenticated?) -> Unit,
-    onGoogleSignInFailure: (error: Throwable) -> Unit
+    events: Flow<AuthEvent>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var isGoogleSigningIn by remember { mutableStateOf(false) }
@@ -122,8 +120,12 @@ fun AuthScreen(
                             isGoogleSigningIn = isGoogleSigningIn,
                             isGuestSigningIn = isGuestSigningIn,
                             enableButtons = !isGoogleSigningIn && !isGuestSigningIn,
-                            onGoogleSignInSuccess = onGoogleSignInSuccess,
-                            onGoogleSignInFailure = onGoogleSignInFailure,
+                            onGoogleSignInSuccess = {
+                                onAction(AuthAction.OnGoogleSignInSuccess(it))
+                            },
+                            onGoogleSignInFailure = {
+                                onAction(AuthAction.OnGoogleSignInFailure(it))
+                            },
                             onGoogleClick = { isGoogleSigningIn = true },
                             onGuestClick = {
                                 isGuestSigningIn = true
@@ -178,8 +180,12 @@ fun AuthScreen(
                                     isGoogleSigningIn = isGoogleSigningIn,
                                     isGuestSigningIn = isGuestSigningIn,
                                     enableButtons = !isGoogleSigningIn && !isGuestSigningIn,
-                                    onGoogleSignInSuccess = onGoogleSignInSuccess,
-                                    onGoogleSignInFailure = onGoogleSignInFailure,
+                                    onGoogleSignInSuccess = {
+                                        onAction(AuthAction.OnGoogleSignInSuccess(it))
+                                    },
+                                    onGoogleSignInFailure = {
+                                        onAction(AuthAction.OnGoogleSignInFailure(it))
+                                    },
                                     onGoogleClick = { isGoogleSigningIn = true },
                                     onGuestClick = {
                                         isGuestSigningIn = true

@@ -8,6 +8,7 @@ import com.eeseka.shelflife.shared.domain.util.DataError
 import com.eeseka.shelflife.shared.domain.util.EmptyResult
 import com.eeseka.shelflife.shared.domain.util.Result
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,11 +38,13 @@ class FirebaseAuthService(
         } else if (firebaseUser.isAnonymous) {
             User.Guest(id = firebaseUser.uid)
         } else {
+            val (name, photo) = getBestProfileInfo(firebaseUser)
+
             User.Authenticated(
                 id = firebaseUser.uid,
                 email = firebaseUser.email ?: "",
-                fullName = firebaseUser.displayName ?: "",
-                profilePictureUrl = firebaseUser.photoURL
+                fullName = name,
+                profilePictureUrl = photo
             )
         }
     }
@@ -72,5 +75,52 @@ class FirebaseAuthService(
         return safeFirebaseCall {
             user.delete()
         }
+    }
+
+    // I will need this after account upgrade as auth state doesnt automatically get it and simply reloading too wont help
+    override suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Remote> {
+        val firebaseUser =
+            Firebase.auth.currentUser ?: return Result.Failure(DataError.Remote.UNAUTHORIZED)
+
+        return try {
+            firebaseUser.reload()
+            val freshUser = Firebase.auth.currentUser
+            if (freshUser != null && !freshUser.isAnonymous) {
+                val (name, photo) = getBestProfileInfo(freshUser)
+                val domainUser = User.Authenticated(
+                    id = freshUser.uid,
+                    email = freshUser.email ?: "",
+                    fullName = name,
+                    profilePictureUrl = photo
+                )
+                Result.Success(domainUser)
+            } else {
+                Result.Failure(DataError.Remote.UNKNOWN)
+            }
+        } catch (e: Exception) {
+            shelfLifeLogger.warn("Failed to reload user: ${e.message}")
+            Result.Failure(DataError.Remote.UNKNOWN)
+        }
+    }
+
+    // After account upgrade (link with google) only email is stored so we have to look through provider data to get name and pfp
+    private fun getBestProfileInfo(user: FirebaseUser): Pair<String, String?> {
+        // the main profile first
+        var name = user.displayName
+        var photo = user.photoURL
+
+        // if missing, hunt through the providers (Google, Apple, etc.)
+        if (name.isNullOrBlank()) {
+            user.providerData.forEach { profile ->
+                if (!profile.displayName.isNullOrBlank()) {
+                    name = profile.displayName
+                }
+                if (photo == null && profile.photoURL != null) {
+                    photo = profile.photoURL
+                }
+            }
+        }
+
+        return Pair(name ?: "", photo)
     }
 }
