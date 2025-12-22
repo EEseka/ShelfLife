@@ -50,7 +50,7 @@ buildkonfig {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -95,6 +95,8 @@ kotlin {
 
             // --- Firebase ---
             implementation(libs.firebase.auth)
+            implementation(libs.firebase.firestore)
+            implementation(libs.firebase.storage)
 
             // --- Capabilities (ShelfLife Stack) ---
             implementation(libs.coil.compose)
@@ -133,8 +135,8 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }
 

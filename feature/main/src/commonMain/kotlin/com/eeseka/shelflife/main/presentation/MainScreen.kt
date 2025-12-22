@@ -1,15 +1,22 @@
 package com.eeseka.shelflife.main.presentation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -19,7 +26,9 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -102,60 +111,9 @@ fun MainScreen() {
 
     if (showRail) {
         Row(modifier = Modifier.fillMaxSize()) {
-            NavigationRail(
-                modifier = Modifier.fillMaxHeight(),
-                containerColor = MaterialTheme.colorScheme.surface
-            ) {
-                BottomNavigationItem.entries.forEach { item ->
-                    val isSelected = currentDestination?.hierarchy?.any {
-                        it.route == item.route::class.qualifiedName
-                    } == true
-
-                    NavigationRailItem(
-                        selected = isSelected,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = item.title.asString()
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = item.title.asString(),
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                softWrap = false
-                            )
-                        },
-                        colors = navRailItemColors,
-                        // Remove ripple for iOS to achieve native feel
-                        interactionSource = if (isIos) remember { NoRippleInteractionSource() } else null
-                    )
-                }
-            }
-            NavigationHost(
-                navController = navController,
-                modifier = Modifier.weight(1f).fillMaxHeight()
-            )
-        }
-    } else {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            bottomBar = {
-                NavigationBar(
-                    // iOS: Force 84dp (Matches native visual height, overrides safe area expansion)
-                    // Android: Default (Let the system handle 3-button vs Gesture nav)
-                    modifier = if (isIos) Modifier.height(84.dp) else Modifier,
+            Row {
+                NavigationRail(
+                    modifier = Modifier.fillMaxHeight(),
                     containerColor = MaterialTheme.colorScheme.surface
                 ) {
                     BottomNavigationItem.entries.forEach { item ->
@@ -163,7 +121,7 @@ fun MainScreen() {
                             it.route == item.route::class.qualifiedName
                         } == true
 
-                        NavigationBarItem(
+                        NavigationRailItem(
                             selected = isSelected,
                             onClick = {
                                 navController.navigate(item.route) {
@@ -189,10 +147,77 @@ fun MainScreen() {
                                     softWrap = false
                                 )
                             },
-                            colors = navBarItemColors,
+                            colors = navRailItemColors,
                             // Remove ripple for iOS to achieve native feel
                             interactionSource = if (isIos) remember { NoRippleInteractionSource() } else null
                         )
+                    }
+                }
+                // Add divider to the right of NavigationRail for visual separation
+                VerticalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                )
+            }
+            NavigationHost(
+                navController = navController,
+                modifier = Modifier.weight(1f).fillMaxHeight()
+            )
+        }
+    } else {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+                .exclude(WindowInsets.statusBars)
+                .exclude(WindowInsets.displayCutout),
+            bottomBar = {
+                Column {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+                    )
+                    NavigationBar(
+                        // iOS: Force 84dp (Matches native visual height, overrides safe area expansion)
+                        // Android: Default (Let the system handle 3-button vs Gesture nav)
+                        modifier = if (isIos) Modifier.height(92.dp) else Modifier,
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ) {
+                        BottomNavigationItem.entries.forEach { item ->
+                            val isSelected = currentDestination?.hierarchy?.any {
+                                it.route == item.route::class.qualifiedName
+                            } == true
+
+                            NavigationBarItem(
+                                selected = isSelected,
+                                onClick = {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                                        contentDescription = item.title.asString()
+                                    )
+                                },
+                                label = {
+                                    Text(
+                                        text = item.title.asString(),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        softWrap = false
+                                    )
+                                },
+                                colors = navBarItemColors,
+                                // Remove ripple for iOS to achieve native feel
+                                interactionSource = if (isIos) remember { NoRippleInteractionSource() } else null
+                            )
+                        }
                     }
                 }
             }

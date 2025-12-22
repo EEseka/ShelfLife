@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="error_no_internet">No internet connection. Please check your network.</string>
-    <string name="error_request_timeout">The request took too long. Please try again.</string>
-    <string name="error_server">Our servers are having trouble. Please try again later.</string>
-    <string name="error_unknown_remote">An unexpected error occurred.</string>
+    <!-- Auth Errors -->
+    <string name="error_auth_unauthorized">Invalid email or password.</string>
+    <string name="error_auth_forbidden">For security, please log in again to perform this action.</string>
+    <string name="error_auth_conflict">An account with this email already exists.</string>
+    <string name="error_auth_unknown">An authentication error occurred. Please try again.</string>
 
-    <string name="error_unauthorized">Invalid email or password.</string>
-    <string name="error_conflict">An account with this email already exists.</string>
-    <string name="error_forbidden">For security, please log out and log in again to perform this action.</string>
+    <!-- Storage Errors (Firebase Firestore/Storage) -->
+    <string name="error_storage_bad_request">Invalid request to storage service.</string>
+    <string name="error_storage_not_found">Item not found in cloud storage.</string>
+    <string name="error_storage_timeout">Storage request took too long. Please try again.</string>
+    <string name="error_storage_conflict">This item already exists in cloud storage.</string>
+    <string name="error_storage_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_storage_server">Cloud storage is having trouble. Please try again later.</string>
+    <string name="error_storage_serialization">Received invalid data from cloud storage.</string>
+    <string name="error_storage_permission_denied">You don\'t have permission to access this resource.</string>
+    <string name="error_storage_quota_exceeded">Storage quota exceeded. Please free up space or upgrade.</string>
+    <string name="error_storage_too_many_requests">Too many storage requests! Please wait a moment.</string>
+    <string name="error_storage_unknown">An unexpected cloud storage error occurred.</string>
 
-    <string name="error_not_found_remote">We couldn\'t find a product with that barcode.</string>
-    <string name="error_bad_request">Something went wrong with the request.</string>
-    <string name="error_too_many_requests">You are scanning too fast! Please wait a moment.</string>
-    <string name="error_serialization">Received invalid data from the server.</string>
+    <!-- Remote API Errors (OpenFoodFacts, etc.) -->
+    <string name="error_remote_bad_request">Invalid API request.</string>
+    <string name="error_remote_not_found">Product not found. Try a different barcode.</string>
+    <string name="error_remote_timeout">API request took too long. Please try again.</string>
+    <string name="error_remote_too_many_requests">Scanning too fast! Please wait a moment.</string>
+    <string name="error_remote_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_remote_server">API server is having trouble. Please try again later.</string>
+    <string name="error_remote_serialization">Received invalid data from API.</string>
+    <string name="error_remote_unknown">An unexpected API error occurred.</string>
 
+    <!-- Local Errors -->
     <string name="error_disk_full">Device storage is full. Cannot save item.</string>
     <string name="error_not_found_local">Item not found in your pantry.</string>
     <string name="error_unknown_local">A local database error occurred.</string>

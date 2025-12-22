@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface AuthService {
     suspend fun validateSession()
     val authState: Flow<User?>
-    suspend fun signInAnonymously(): Result<User.Guest, DataError.Remote>
+    suspend fun signInAnonymously(): Result<User.Guest, DataError.Auth>
     suspend fun signOut(): EmptyResult<DataError.Local>
-    suspend fun deleteAccount(): EmptyResult<DataError.Remote>
-    suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Remote>
+    suspend fun deleteAccount(): EmptyResult<DataError.Auth>
+    suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Auth>
 }

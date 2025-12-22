@@ -4,9 +4,11 @@ import com.eeseka.shelflife.auth.presentation.AuthViewModel
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
 import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.auth.FirebaseAuthService
+import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteStorageService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
 import com.eeseka.shelflife.shared.data.settings.DataStoreSettingsService
 import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.database.remote.RemoteStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.presentation.MainViewModel
@@ -23,6 +25,7 @@ val sharedModule = module {
     single<ShelfLifeLogger> { KermitLogger }
     singleOf(::DataStoreSettingsService) bind SettingsService::class
     singleOf(::FirebaseAuthService) bind AuthService::class
+    singleOf(::FirebaseFirestoreRemoteStorageService) bind RemoteStorageService::class
 
     // ComposeApp module
     viewModelOf(::MainViewModel)

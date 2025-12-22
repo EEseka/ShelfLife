@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -45,7 +44,6 @@ import com.eeseka.shelflife.settings.presentation.components.SettingsFooter
 import com.eeseka.shelflife.settings.presentation.components.SettingsSection
 import com.eeseka.shelflife.settings.presentation.components.SyncStatusItem
 import com.eeseka.shelflife.settings.presentation.components.ThemeSelectionItem
-import com.eeseka.shelflife.shared.data.util.PlatformUtils
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
 import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.presentation.permissions.Permission
@@ -379,9 +377,7 @@ private fun SettingsTopBar() {
                 text = stringResource(Res.string.settings),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
             )
-        },
-        windowInsets = WindowInsets(),
-        modifier = Modifier.height(52.dp)
+        }
     )
 }
 

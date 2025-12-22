@@ -1,6 +1,5 @@
 package com.eeseka.shelflife.shared.data.auth
 
-import com.eeseka.shelflife.shared.data.networking.safeFirebaseCall
 import com.eeseka.shelflife.shared.domain.auth.AuthService
 import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
@@ -49,8 +48,8 @@ class FirebaseAuthService(
         }
     }
 
-    override suspend fun signInAnonymously(): Result<User.Guest, DataError.Remote> {
-        return safeFirebaseCall {
+    override suspend fun signInAnonymously(): Result<User.Guest, DataError.Auth> {
+        return safeFirebaseAuthCall(shelfLifeLogger) {
             val result = Firebase.auth.signInAnonymously()
             User.Guest(id = result.user?.uid ?: "")
         }
@@ -68,19 +67,19 @@ class FirebaseAuthService(
         }
     }
 
-    override suspend fun deleteAccount(): EmptyResult<DataError.Remote> {
+    override suspend fun deleteAccount(): EmptyResult<DataError.Auth> {
         val user = Firebase.auth.currentUser
-            ?: return Result.Failure(DataError.Remote.UNAUTHORIZED)
+            ?: return Result.Failure(DataError.Auth.UNAUTHORIZED)
 
-        return safeFirebaseCall {
+        return safeFirebaseAuthCall(shelfLifeLogger) {
             user.delete()
         }
     }
 
-    // I will need this after account upgrade as auth state doesnt automatically get it and simply reloading too wont help
-    override suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Remote> {
+    // I will need this after account upgrade as auth state doesn't automatically get it and simply reloading too won't help
+    override suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Auth> {
         val firebaseUser =
-            Firebase.auth.currentUser ?: return Result.Failure(DataError.Remote.UNAUTHORIZED)
+            Firebase.auth.currentUser ?: return Result.Failure(DataError.Auth.UNAUTHORIZED)
 
         return try {
             firebaseUser.reload()
@@ -95,15 +94,15 @@ class FirebaseAuthService(
                 )
                 Result.Success(domainUser)
             } else {
-                Result.Failure(DataError.Remote.UNKNOWN)
+                Result.Failure(DataError.Auth.UNKNOWN)
             }
         } catch (e: Exception) {
             shelfLifeLogger.warn("Failed to reload user: ${e.message}")
-            Result.Failure(DataError.Remote.UNKNOWN)
+            Result.Failure(DataError.Auth.UNKNOWN)
         }
     }
 
-    // After account upgrade (link with google) only email is stored so we have to look through provider data to get name and pfp
+    // After account upgrade (link with Google) only email is stored so we have to look through provider data to get name and pfp
     private fun getBestProfileInfo(user: FirebaseUser): Pair<String, String?> {
         // the main profile first
         var name = user.displayName
