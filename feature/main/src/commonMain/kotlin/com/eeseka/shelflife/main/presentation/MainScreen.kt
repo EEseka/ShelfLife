@@ -213,7 +213,11 @@ fun NavigationHost(
     NavHost(
         navController = navController,
         startDestination = Screen.Pantry,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
+        popEnterTransition = { fadeIn() },
+        popExitTransition = { fadeOut() }
     ) {
         composable<Screen.Pantry> {
             PlaceholderScreen("Pantry")
