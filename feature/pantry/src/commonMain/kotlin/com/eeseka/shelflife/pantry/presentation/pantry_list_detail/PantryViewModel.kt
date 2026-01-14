@@ -3,7 +3,6 @@ package com.eeseka.shelflife.pantry.presentation.pantry_list_detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.pantry.domain.PantryRepository
-import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryAction
 import com.eeseka.shelflife.pantry.presentation.pantry_detail.PantryDetailEvent
 import com.eeseka.shelflife.pantry.presentation.pantry_list.PantryListEvent
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
@@ -116,17 +115,28 @@ class PantryViewModel(
                 _state.update {
                     it.copy(
                         isCreateItemSheetOpen = false,
+                        createSheetScopeId = null,
                         draftItem = null
                     )
                 }
             }
 
             PantryAction.OnEditSheetOpen -> {
-                _state.update { it.copy(isEditItemSheetOpen = true) }
+                _state.update {
+                    it.copy(
+                        isEditItemSheetOpen = true,
+                        editSheetScopeId = Uuid.random().toString()
+                    )
+                }
             }
 
             PantryAction.OnEditSheetDismiss -> {
-                _state.update { it.copy(isEditItemSheetOpen = false) }
+                _state.update {
+                    it.copy(
+                        isEditItemSheetOpen = false,
+                        editSheetScopeId = null
+                    )
+                }
             }
 
             // --- Search & Filter ---
@@ -166,7 +176,8 @@ class PantryViewModel(
                             isScannerLoading = false,
                             isScannerOpen = false,
                             isCreateItemSheetOpen = true,
-                            draftItem = apiItem
+                            createSheetScopeId = Uuid.random().toString(),
+                            draftItem = apiItem,
                         )
                     }
                 }
@@ -183,6 +194,7 @@ class PantryViewModel(
         _state.update {
             it.copy(
                 isCreateItemSheetOpen = true,
+                createSheetScopeId = Uuid.random().toString(),
                 draftItem = emptyItem
             )
         }
@@ -197,6 +209,7 @@ class PantryViewModel(
                         it.copy(
                             isCreatingNewItem = false,
                             isCreateItemSheetOpen = false,
+                            createSheetScopeId = null,
                             draftItem = null,
                             selectedItem = item
                         )
@@ -207,6 +220,7 @@ class PantryViewModel(
                         it.copy(
                             isCreatingNewItem = false,
                             isCreateItemSheetOpen = false,
+                            createSheetScopeId = null,
                             draftItem = null
                         )
                     }
@@ -224,12 +238,19 @@ class PantryViewModel(
                         it.copy(
                             isUpdatingItem = false,
                             isEditItemSheetOpen = false,
+                            editSheetScopeId = null,
                             selectedItem = item
                         )
                     }
                     _pantryDetailEventChannel.send(PantryDetailEvent.Success(UiText.Resource(Res.string.item_updated)))
                 }.onFailure { error ->
-                    _state.update { it.copy(isUpdatingItem = false, isEditItemSheetOpen = false) }
+                    _state.update {
+                        it.copy(
+                            isUpdatingItem = false,
+                            isEditItemSheetOpen = false,
+                            editSheetScopeId = null
+                        )
+                    }
                     _pantryDetailEventChannel.send(PantryDetailEvent.Error(error.toUiText()))
                 }
         }
@@ -258,7 +279,8 @@ class PantryViewModel(
 
     @OptIn(ExperimentalTime::class)
     private fun createEmptyPantryItem(): PantryItem {
-        val today = Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault()).date
+        val today =
+            Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault()).date
         return PantryItem(
             id = Uuid.Companion.random().toString(),
             barcode = "",

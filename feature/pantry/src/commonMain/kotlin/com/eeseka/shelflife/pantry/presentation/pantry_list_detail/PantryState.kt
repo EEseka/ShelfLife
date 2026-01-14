@@ -29,5 +29,9 @@ data class PantryState(
 
     // --- Detail / Selection Data ---
     val selectedItem: PantryItem? = null,
-    val isDetailOpen: Boolean = false
+    val isDetailOpen: Boolean = false,
+
+    // -- For the Dialog Adaptive Sheet ---
+    val createSheetScopeId: String? = null,
+    val editSheetScopeId: String? = null
 )

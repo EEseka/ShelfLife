@@ -20,7 +20,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>ShelfLife needs camera access to scan food barcodes and take photos of pantry items.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photos to let you pick pantry item images.</string>
+	<string>ShelfLife needs access to your photos to let you pick pantry item images.</string>
 	<key>GIDServerClientID</key>
 	<string>929654105316-2075et3tgrbkp76l837aqgj0ld012426.apps.googleusercontent.com</string>
 </dict>

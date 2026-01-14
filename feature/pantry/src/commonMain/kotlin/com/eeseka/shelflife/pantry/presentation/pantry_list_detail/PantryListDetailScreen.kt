@@ -137,8 +137,8 @@ fun PantryListDetailScreen(
             )
         }
 
-        if (state.isCreateItemSheetOpen && state.draftItem != null) {
-            DialogSheetScopedViewModel(visible = state.isCreateItemSheetOpen) {
+        if (state.isCreateItemSheetOpen && state.draftItem != null && state.createSheetScopeId != null) {
+            DialogSheetScopedViewModel(visible = state.isCreateItemSheetOpen, scopeId = state.createSheetScopeId) {
                 PantryFormRoot(
                     initialItem = state.draftItem,
                     mode = PantryFormMode.Create,
@@ -151,8 +151,8 @@ fun PantryListDetailScreen(
             }
         }
 
-        if (state.isEditItemSheetOpen && state.selectedItem != null) {
-            DialogSheetScopedViewModel(visible = state.isEditItemSheetOpen) {
+        if (state.isEditItemSheetOpen && state.selectedItem != null && state.editSheetScopeId != null) {
+            DialogSheetScopedViewModel(visible = state.isEditItemSheetOpen, scopeId = state.editSheetScopeId) {
                 PantryFormRoot(
                     initialItem = state.selectedItem,
                     mode = PantryFormMode.Edit,
@@ -208,3 +208,5 @@ private fun EmptyDetailPane() {
         }
     }
 }
+
+// TODO: FIX THE ISSUE THAT SCREEN ROTATIONS RESET SCROLL STATES IN LIST AND DETAIL SCREEN AND EVEN STATES IN THE ADAPTIVE SHEET
