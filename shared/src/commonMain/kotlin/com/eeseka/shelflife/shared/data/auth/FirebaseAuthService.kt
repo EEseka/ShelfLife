@@ -7,6 +7,8 @@ import com.eeseka.shelflife.shared.domain.util.DataError
 import com.eeseka.shelflife.shared.domain.util.EmptyResult
 import com.eeseka.shelflife.shared.domain.util.Result
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.auth.FirebaseAuthInvalidCredentialsException
+import dev.gitlive.firebase.auth.FirebaseAuthInvalidUserException
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.flow.Flow
@@ -17,17 +19,24 @@ class FirebaseAuthService(
 ) : AuthService {
 
     override suspend fun validateSession() {
-        val user = Firebase.auth.currentUser ?: return // Already logged out, nothing to do.
+        val user = Firebase.auth.currentUser ?: return
 
         try {
-            // This Forces a network call to Firebase to check if the account still exists.
             user.reload()
         } catch (e: Exception) {
-            // If we get HERE, it means the token is invalid or user is deleted on server.
-            shelfLifeLogger.warn("Session is invalid (User deleted?): ${e.message}")
+            when (e) {
+                is FirebaseAuthInvalidUserException,       // Account deleted on server
+                is FirebaseAuthInvalidCredentialsException // Token expired/revoked/password changed
+                    -> {
+                    shelfLifeLogger.warn("Session invalid (Critical Auth Error): ${e.message}")
+                    signOut()
+                }
 
-            // Force local cleanup immediately
-            signOut()
+                else -> {
+                    // If it's a Network error, Timeout, or WebException, we assume the session is fine.
+                    shelfLifeLogger.warn("Session check failed (Likely Network): ${e.message}")
+                }
+            }
         }
     }
 
@@ -55,7 +64,7 @@ class FirebaseAuthService(
         }
     }
 
-    override suspend fun signOut(): EmptyResult<DataError.Local> {
+    override suspend fun signOut(): EmptyResult<DataError.LocalStorage> {
         return try {
             // Sign out is rarely a "Remote" error. It mainly clears local storage.
             Firebase.auth.signOut()
@@ -63,7 +72,7 @@ class FirebaseAuthService(
         } catch (e: Exception) {
             e.printStackTrace()
             shelfLifeLogger.warn("Error signing out: ${e.message}")
-            Result.Failure(DataError.Local.UNKNOWN)
+            Result.Failure(DataError.LocalStorage.UNKNOWN)
         }
     }
 

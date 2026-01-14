@@ -9,7 +9,7 @@ interface AuthService {
     suspend fun validateSession()
     val authState: Flow<User?>
     suspend fun signInAnonymously(): Result<User.Guest, DataError.Auth>
-    suspend fun signOut(): EmptyResult<DataError.Local>
+    suspend fun signOut(): EmptyResult<DataError.LocalStorage>
     suspend fun deleteAccount(): EmptyResult<DataError.Auth>
     suspend fun reloadAndGetUpgradedUser(): Result<User.Authenticated, DataError.Auth>
 }

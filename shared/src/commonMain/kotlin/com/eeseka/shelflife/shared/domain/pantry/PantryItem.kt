@@ -1,7 +1,10 @@
 package com.eeseka.shelflife.shared.domain.pantry
 
 import kotlinx.datetime.LocalDate
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 data class PantryItem(
     // --- IDENTITY (Local & API) ---
     val id: String, // UUID for local database uniqueness
@@ -15,7 +18,7 @@ data class PantryItem(
 
     // --- QUANTITY (User + API) ---
     val quantity: Double = 1.0, // e.g. 1.0, 0.5 (half left)
-    val quantityUnit: String = "pcs", // "pcs", "g", "ml"
+    val quantityUnit: String = "", // "pcs", "g", "ml"
     val packagingSize: String? = null, // e.g. "500g" from API
 
     // --- DATES (The Core Feature) ---
@@ -25,6 +28,9 @@ data class PantryItem(
 
     // --- STORAGE ---
     val storageLocation: StorageLocation = StorageLocation.PANTRY,
+
+    // --- METADATA (CRITICAL FOR OFFLINE-FIRST SYNC) ---
+    val updatedAt: Long = Clock.System.now().toEpochMilliseconds(),
 
     // --- HEALTH & INSIGHTS (From OFF API - The "Perfect" App Features) ---
     // NutriScore: 'a' (healthy) to 'e' (unhealthy). Color code this in UI!

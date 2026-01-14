@@ -3,7 +3,6 @@ package com.eeseka.shelflife.shared.design_system.components
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
@@ -29,8 +28,7 @@ fun ShelfLifeScaffold(
         modifier = modifier,
         topBar = topBar,
         contentWindowInsets = WindowInsets.statusBars
-            .union(WindowInsets.displayCutout)
-            .union(WindowInsets.ime),
+            .union(WindowInsets.displayCutout),
         snackbarHost = {
             snackbarHostState?.let {
                 SnackbarHost(
@@ -52,11 +50,18 @@ fun ShelfLifeScaffold(
                         SnackbarType.Info -> MaterialTheme.colorScheme.inverseOnSurface
                     }
 
+                    val dismissActionContentColor = when (type) {
+                        SnackbarType.Success -> MaterialTheme.colorScheme.onPrimaryContainer
+                        SnackbarType.Error -> MaterialTheme.colorScheme.onErrorContainer
+                        SnackbarType.Info -> MaterialTheme.colorScheme.inverseOnSurface
+                    }
+
                     Snackbar(
                         snackbarData = data,
                         modifier = Modifier.padding(horizontal = 16.dp),
                         containerColor = containerColor,
                         contentColor = contentColor,
+                        dismissActionContentColor = dismissActionContentColor,
                         shape = MaterialTheme.shapes.medium
                     )
                 }

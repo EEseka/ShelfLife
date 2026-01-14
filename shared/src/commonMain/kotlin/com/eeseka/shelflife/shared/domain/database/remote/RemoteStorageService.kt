@@ -9,21 +9,21 @@ interface RemoteStorageService {
     suspend fun createPantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.Storage>
+    ): EmptyResult<DataError.RemoteStorage>
 
-    suspend fun getPantryItems(userId: String): Result<List<PantryItem>, DataError.Storage>
+    suspend fun getPantryItems(userId: String): Result<List<PantryItem>, DataError.RemoteStorage>
     suspend fun getPantryItem(
         userId: String,
         pantryItemId: String
-    ): Result<PantryItem, DataError.Storage>
+    ): Result<PantryItem, DataError.RemoteStorage>
 
     suspend fun updatePantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.Storage>
+    ): EmptyResult<DataError.RemoteStorage>
 
     suspend fun deletePantryItem(
         userId: String,
         pantryItemId: String
-    ): EmptyResult<DataError.Storage>
+    ): EmptyResult<DataError.RemoteStorage>
 }

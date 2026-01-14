@@ -40,8 +40,13 @@ kotlin {
 
             implementation(libs.bundles.koin.common)
 
+            implementation(libs.jetbrains.compose.backhandler)
+
+            implementation(libs.material3.adaptive.layout)
+
             implementation(project(":shared"))
             implementation(project(":feature:settings"))
+            implementation(project(":feature:pantry"))
         }
     }
 }

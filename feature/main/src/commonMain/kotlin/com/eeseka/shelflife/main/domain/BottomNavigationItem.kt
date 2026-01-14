@@ -2,10 +2,10 @@ package com.eeseka.shelflife.main.domain
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Kitchen
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.Kitchen
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.eeseka.shelflife.shared.navigation.Screen
@@ -24,8 +24,8 @@ enum class BottomNavigationItem(
     PANTRY(
         route = Screen.Pantry,
         title = UiText.Resource(Res.string.pantry),
-        selectedIcon = Icons.Filled.Kitchen,
-        unselectedIcon = Icons.Outlined.Kitchen
+        selectedIcon = Icons.Filled.Inventory2,
+        unselectedIcon = Icons.Outlined.Inventory2
     ),
     INSIGHTS(
         route = Screen.Insights,

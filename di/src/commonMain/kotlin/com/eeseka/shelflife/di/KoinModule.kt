@@ -1,17 +1,33 @@
 package com.eeseka.shelflife.di
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.eeseka.shelflife.auth.presentation.AuthViewModel
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
+import com.eeseka.shelflife.pantry.data.OfflineFirstPantryRepository
+import com.eeseka.shelflife.pantry.domain.PantryRepository
+import com.eeseka.shelflife.pantry.presentation.form.PantryFormViewModel
+import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryViewModel
 import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.auth.FirebaseAuthService
+import com.eeseka.shelflife.shared.data.database.local.DatabaseFactory
+import com.eeseka.shelflife.shared.data.database.local.RoomLocalStorageService
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteStorageService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
+import com.eeseka.shelflife.shared.data.media.NativeImageCompressionService
+import com.eeseka.shelflife.shared.data.networking.HttpClientFactory
+import com.eeseka.shelflife.shared.data.networking.KtorApiService
+import com.eeseka.shelflife.shared.data.notification.NativeNotificationService
 import com.eeseka.shelflife.shared.data.settings.DataStoreSettingsService
 import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
 import com.eeseka.shelflife.shared.domain.database.remote.RemoteStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
+import com.eeseka.shelflife.shared.domain.media.ImageCompressionService
+import com.eeseka.shelflife.shared.domain.networking.ApiService
+import com.eeseka.shelflife.shared.domain.notification.NotificationService
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.presentation.MainViewModel
+import com.eeseka.shelflife.shared.presentation.util.ScopedStoreRegistryViewModel
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
@@ -23,9 +39,23 @@ import org.koin.dsl.module
 val sharedModule = module {
     // Shared module
     single<ShelfLifeLogger> { KermitLogger }
+    single {
+        HttpClientFactory(get()).create(get())
+    }
     singleOf(::DataStoreSettingsService) bind SettingsService::class
     singleOf(::FirebaseAuthService) bind AuthService::class
     singleOf(::FirebaseFirestoreRemoteStorageService) bind RemoteStorageService::class
+    singleOf(::RoomLocalStorageService) bind LocalStorageService::class
+    singleOf(::NativeNotificationService) bind NotificationService::class
+    singleOf(::NativeImageCompressionService) bind ImageCompressionService::class
+    singleOf(::KtorApiService) bind ApiService::class
+    single {
+        get<DatabaseFactory>()
+            .create()
+            .setDriver(BundledSQLiteDriver())
+            .build()
+    }
+    viewModelOf(::ScopedStoreRegistryViewModel)
 
     // ComposeApp module
     viewModelOf(::MainViewModel)
@@ -38,6 +68,11 @@ val sharedModule = module {
 
     // Feature: Settings module
     viewModelOf(::SettingsViewModel)
+
+    // Feature: Pantry module
+    singleOf(::OfflineFirstPantryRepository) bind PantryRepository::class
+    viewModelOf(::PantryViewModel)
+    viewModelOf(::PantryFormViewModel)
 }
 
 expect val platformModule: Module

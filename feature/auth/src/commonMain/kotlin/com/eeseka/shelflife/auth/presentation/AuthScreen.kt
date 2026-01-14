@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.auth.presentation.components.AuthActions
 import com.eeseka.shelflife.auth.presentation.components.AuthBranding
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
-import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.presentation.util.DeviceConfiguration
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
 import com.eeseka.shelflife.shared.presentation.util.ShelfLifeSnackbarVisuals
@@ -68,7 +67,7 @@ fun AuthScreen(
             is AuthEvent.Error -> {
                 isGoogleSigningIn = false
                 isGuestSigningIn = false
-                val message = event.error.asStringAsync()
+                val message = event.message.asStringAsync()
                 val visuals = ShelfLifeSnackbarVisuals(
                     message = message,
                     type = SnackbarType.Error
@@ -77,7 +76,7 @@ fun AuthScreen(
             }
 
             is AuthEvent.Success -> {
-                val message = event.successMessage.asStringAsync()
+                val message = event.message.asStringAsync()
                 val visuals = ShelfLifeSnackbarVisuals(
                     message = message,
                     type = SnackbarType.Success

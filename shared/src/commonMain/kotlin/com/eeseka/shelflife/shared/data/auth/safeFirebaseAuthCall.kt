@@ -38,7 +38,16 @@ suspend fun <T> safeFirebaseAuthCall(
     } catch (e: Exception) {
         currentCoroutineContext().ensureActive()
         logger.error("Generic Exception error", e)
-        // Map unknown/network errors
-        Result.Failure(DataError.Auth.UNKNOWN)
+
+        val errorMessage = e.message?.lowercase() ?: ""
+        val error = when {
+            errorMessage.contains("network") ||
+                    errorMessage.contains("connection") ||
+                    errorMessage.contains("offline") ||
+                    errorMessage.contains("timeout") -> DataError.Auth.NO_INTERNET
+
+            else -> DataError.Auth.UNKNOWN
+        }
+        Result.Failure(error)
     }
 }

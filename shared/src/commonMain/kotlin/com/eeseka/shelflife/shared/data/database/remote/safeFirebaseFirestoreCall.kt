@@ -14,28 +14,28 @@ import kotlinx.serialization.SerializationException
 suspend fun <T> safeFirebaseFirestoreCall(
     logger: ShelfLifeLogger,
     action: suspend () -> T
-): Result<T, DataError.Storage> {
+): Result<T, DataError.RemoteStorage> {
     return try {
         val result = action()
         Result.Success(result)
     } catch (e: FirebaseFirestoreException) {
         val error = when (e.code) {
-            FirestoreExceptionCode.PERMISSION_DENIED -> DataError.Storage.PERMISSION_DENIED
-            FirestoreExceptionCode.UNAUTHENTICATED -> DataError.Storage.PERMISSION_DENIED
-            FirestoreExceptionCode.NOT_FOUND -> DataError.Storage.NOT_FOUND
-            FirestoreExceptionCode.ALREADY_EXISTS -> DataError.Storage.CONFLICT
-            FirestoreExceptionCode.RESOURCE_EXHAUSTED -> DataError.Storage.QUOTA_EXCEEDED
-            FirestoreExceptionCode.DEADLINE_EXCEEDED -> DataError.Storage.REQUEST_TIMEOUT
-            FirestoreExceptionCode.UNAVAILABLE -> DataError.Storage.NO_INTERNET
-            FirestoreExceptionCode.INVALID_ARGUMENT -> DataError.Storage.BAD_REQUEST
-            FirestoreExceptionCode.ABORTED -> DataError.Storage.SERVER_ERROR
-            FirestoreExceptionCode.INTERNAL -> DataError.Storage.SERVER_ERROR
-            FirestoreExceptionCode.DATA_LOSS -> DataError.Storage.SERVER_ERROR
-            FirestoreExceptionCode.CANCELLED -> DataError.Storage.REQUEST_TIMEOUT
-            FirestoreExceptionCode.FAILED_PRECONDITION -> DataError.Storage.BAD_REQUEST
-            FirestoreExceptionCode.OUT_OF_RANGE -> DataError.Storage.BAD_REQUEST
-            FirestoreExceptionCode.UNIMPLEMENTED -> DataError.Storage.SERVER_ERROR
-            else -> DataError.Storage.UNKNOWN
+            FirestoreExceptionCode.PERMISSION_DENIED -> DataError.RemoteStorage.PERMISSION_DENIED
+            FirestoreExceptionCode.UNAUTHENTICATED -> DataError.RemoteStorage.PERMISSION_DENIED
+            FirestoreExceptionCode.NOT_FOUND -> DataError.RemoteStorage.NOT_FOUND
+            FirestoreExceptionCode.ALREADY_EXISTS -> DataError.RemoteStorage.CONFLICT
+            FirestoreExceptionCode.RESOURCE_EXHAUSTED -> DataError.RemoteStorage.QUOTA_EXCEEDED
+            FirestoreExceptionCode.DEADLINE_EXCEEDED -> DataError.RemoteStorage.REQUEST_TIMEOUT
+            FirestoreExceptionCode.UNAVAILABLE -> DataError.RemoteStorage.NO_INTERNET
+            FirestoreExceptionCode.INVALID_ARGUMENT -> DataError.RemoteStorage.BAD_REQUEST
+            FirestoreExceptionCode.ABORTED -> DataError.RemoteStorage.SERVER_ERROR
+            FirestoreExceptionCode.INTERNAL -> DataError.RemoteStorage.SERVER_ERROR
+            FirestoreExceptionCode.DATA_LOSS -> DataError.RemoteStorage.SERVER_ERROR
+            FirestoreExceptionCode.CANCELLED -> DataError.RemoteStorage.REQUEST_TIMEOUT
+            FirestoreExceptionCode.FAILED_PRECONDITION -> DataError.RemoteStorage.BAD_REQUEST
+            FirestoreExceptionCode.OUT_OF_RANGE -> DataError.RemoteStorage.BAD_REQUEST
+            FirestoreExceptionCode.UNIMPLEMENTED -> DataError.RemoteStorage.SERVER_ERROR
+            else -> DataError.RemoteStorage.UNKNOWN
         }
         Result.Failure(error)
     } catch (e: FirebaseStorageException) {
@@ -48,42 +48,42 @@ suspend fun <T> safeFirebaseFirestoreCall(
             errorMessage.contains("unauthorized") ||
                     errorMessage.contains("unauthenticated") ||
                     errorMessage.contains("permission-denied") ->
-                DataError.Storage.PERMISSION_DENIED
+                DataError.RemoteStorage.PERMISSION_DENIED
 
             // Storage Quota errors
             errorMessage.contains("quota") ||
                     errorMessage.contains("quota-exceeded") ->
-                DataError.Storage.QUOTA_EXCEEDED
+                DataError.RemoteStorage.QUOTA_EXCEEDED
 
             // Rate limiting
             errorMessage.contains("retry-limit") ->
-                DataError.Storage.TOO_MANY_REQUESTS
+                DataError.RemoteStorage.TOO_MANY_REQUESTS
 
             // Not found
             errorMessage.contains("object-not-found") ||
                     errorMessage.contains("not-found") ->
-                DataError.Storage.NOT_FOUND
+                DataError.RemoteStorage.NOT_FOUND
 
             // Cancelled/Timeout
             errorMessage.contains("canceled") ||
                     errorMessage.contains("cancelled") ->
-                DataError.Storage.REQUEST_TIMEOUT
+                DataError.RemoteStorage.REQUEST_TIMEOUT
 
             // Invalid arguments
             errorMessage.contains("invalid-argument") ->
-                DataError.Storage.BAD_REQUEST
+                DataError.RemoteStorage.BAD_REQUEST
 
             // Server errors
             errorMessage.contains("server") ||
                     errorMessage.contains("internal") ->
-                DataError.Storage.SERVER_ERROR
+                DataError.RemoteStorage.SERVER_ERROR
 
-            else -> DataError.Storage.UNKNOWN
+            else -> DataError.RemoteStorage.UNKNOWN
         }
         Result.Failure(error)
     } catch (e: SerializationException) {
         logger.error("Serialization error", e)
-        Result.Failure(DataError.Storage.SERIALIZATION)
+        Result.Failure(DataError.RemoteStorage.SERIALIZATION)
     } catch (e: Exception) {
         currentCoroutineContext().ensureActive()
         logger.error("Generic Exception error", e)
@@ -93,18 +93,23 @@ suspend fun <T> safeFirebaseFirestoreCall(
         val error = when {
             // Custom exceptions from our code
             errorMessage.contains("already exists") ->
-                DataError.Storage.CONFLICT
+                DataError.RemoteStorage.CONFLICT
 
             errorMessage.contains("not found") ->
-                DataError.Storage.NOT_FOUND
+                DataError.RemoteStorage.NOT_FOUND
+
             // Network errors
-            errorMessage.contains("timeout") ->
-                DataError.Storage.REQUEST_TIMEOUT
+            errorMessage.contains("timeout") ||
+                    errorMessage.contains("deadline_exceeded") ->
+                DataError.RemoteStorage.REQUEST_TIMEOUT
 
-            errorMessage.contains("network") || errorMessage.contains("connection") ->
-                DataError.Storage.NO_INTERNET
+            errorMessage.contains("network") ||
+                    errorMessage.contains("connection") ||
+                    errorMessage.contains("offline") ||
+                    errorMessage.contains("unavailable") ->
+                DataError.RemoteStorage.NO_INTERNET
 
-            else -> DataError.Storage.UNKNOWN
+            else -> DataError.RemoteStorage.UNKNOWN
         }
         Result.Failure(error)
     }

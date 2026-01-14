@@ -23,8 +23,8 @@ class AuthViewModel(
     private val shelfLifeLogger: ShelfLifeLogger,
     private val authService: AuthService
 ) : ViewModel() {
-    private val eventChannel = Channel<AuthEvent>()
-    val events = eventChannel.receiveAsFlow()
+    private val _eventChannel = Channel<AuthEvent>()
+    val events = _eventChannel.receiveAsFlow()
 
     fun onAction(action: AuthAction) {
         when (action) {
@@ -40,9 +40,9 @@ class AuthViewModel(
                 .onSuccess {
                     // Firebase auth state will update automatically
                     // MainViewModel will cache the user and navigate to Home
-                    eventChannel.send(AuthEvent.Success(UiText.Resource(Res.string.auth_success)))
+                    _eventChannel.send(AuthEvent.Success(UiText.Resource(Res.string.auth_success)))
                 }.onFailure { error ->
-                    eventChannel.send(AuthEvent.Error(error.toUiText()))
+                    _eventChannel.send(AuthEvent.Error(error.toUiText()))
                 }
         }
     }
@@ -51,10 +51,10 @@ class AuthViewModel(
         viewModelScope.launch {
             if (user != null) {
                 // Firebase auth state will automatically sync via MainViewModel
-                eventChannel.send(AuthEvent.Success(UiText.Resource(Res.string.auth_success)))
+                _eventChannel.send(AuthEvent.Success(UiText.Resource(Res.string.auth_success)))
             } else {
                 shelfLifeLogger.warn("Google sign in succeeded but user is null")
-                eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
+                _eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
             }
         }
     }
@@ -62,14 +62,14 @@ class AuthViewModel(
     private fun sendError(error: Throwable) {
         viewModelScope.launch {
             if (error.message?.contains("A network error") == true) {
-                eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.internet_connection_unavailable)))
+                _eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.internet_connection_unavailable)))
             } else if (error.message?.contains("Idtoken is null") == true) {
-                eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.sign_in_canceled)))
+                _eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.sign_in_canceled)))
             } else if (error.message?.contains("The user account has been disabled") == true) {
-                eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.account_disabled)))
+                _eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.account_disabled)))
             } else {
                 shelfLifeLogger.error(error.message ?: "Unknown error", error.cause)
-                eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
+                _eventChannel.send(AuthEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
             }
         }
     }

@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -103,7 +102,7 @@ fun SettingsScreen(
                 isSignInWithGoogleLoading = false
                 snackbarHostState.showSnackbar(
                     ShelfLifeSnackbarVisuals(
-                        event.successMessage.asStringAsync(),
+                        event.message.asStringAsync(),
                         SnackbarType.Success
                     )
                 )
@@ -113,7 +112,7 @@ fun SettingsScreen(
                 isSignInWithGoogleLoading = false
                 snackbarHostState.showSnackbar(
                     ShelfLifeSnackbarVisuals(
-                        event.error.asStringAsync(),
+                        event.message.asStringAsync(),
                         SnackbarType.Error
                     )
                 )

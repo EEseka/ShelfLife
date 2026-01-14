@@ -25,7 +25,10 @@ data class PantryItemSerializable(
     
     // Storage location as string
     val storageLocation: String = "PANTRY", // "PANTRY", "FRIDGE", or "FREEZER"
-    
+
+    // METADATA (CRITICAL FOR OFFLINE-FIRST CONFLICT RESOLUTION)
+    val updatedAt: Long,
+
     // Health & Insights
     val nutriScore: String? = null,
     val novaGroup: Int? = null,

@@ -4,6 +4,7 @@
     <string name="error_auth_unauthorized">Invalid email or password.</string>
     <string name="error_auth_forbidden">For security, please log in again to perform this action.</string>
     <string name="error_auth_conflict">An account with this email already exists.</string>
+    <string name="error_auth_no_internet">No internet connection. Please check your network.</string>
     <string name="error_auth_unknown">An authentication error occurred. Please try again.</string>
 
     <!-- Storage Errors (Firebase Firestore/Storage) -->
@@ -28,9 +29,21 @@
     <string name="error_remote_server">API server is having trouble. Please try again later.</string>
     <string name="error_remote_serialization">Received invalid data from API.</string>
     <string name="error_remote_unknown">An unexpected API error occurred.</string>
+    <string name="error_remote_unauthorized">Session expired. Please sign in again.</string>
+    <string name="error_remote_forbidden">You do not have permission to do this.</string>
+    <string name="error_remote_conflict">A conflict occurred. This item may have been updated elsewhere.</string>
+    <string name="error_remote_payload_too_large">The request data is too large to process.</string>
+    <string name="error_remote_service_unavailable">Service is currently under maintenance. Please try again later.</string>
 
     <!-- Local Errors -->
     <string name="error_disk_full">Device storage is full. Cannot save item.</string>
     <string name="error_not_found_local">Item not found in your pantry.</string>
     <string name="error_unknown_local">A local database error occurred.</string>
+
+    <!-- Notification strings -->
+    <string name="notification_title">ShelfLife Alert 🍎</string>
+
+    <string name="notification_single_item">%1$s is expiring today!</string>
+    <string name="notification_two_items">%1$s and %2$s are expiring today!</string>
+    <string name="notification_many_items">%1$s, %2$s, and %3$d others are expiring today!</string>
 </resources>

@@ -1,0 +1,4 @@
+<resources>
+    <string name="notification_channel_name">Expiry Alerts</string>
+    <string name="notification_channel_description">Daily reminders for expiring food</string>
+</resources>

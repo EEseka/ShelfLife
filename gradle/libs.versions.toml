@@ -38,9 +38,8 @@ compottie = "2.0.2"          # [ADDED] For Lottie Animations
 
 # --- UI & Hardware ---
 coil = "3.3.0"
-peekaboo = "0.5.2"
+kscan = "0.5.0"
 camerax = "1.5.2"
-kmp-notifier = "1.6.1"
 
 # --- Auth ---
 auth = "2.3.1"
@@ -80,8 +79,8 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 
 # Room
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 # Material3 Adaptive
@@ -117,9 +116,8 @@ jetbrains-compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhand
 # --- UI & Hardware ---
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-peekaboo-ui = { module = "io.github.onseok:peekaboo-ui", version.ref = "peekaboo" }
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
-kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmp-notifier" }
+kscan = { module = "io.github.ismai117:KScan", version.ref = "kscan" }
 
 # Permission handling
 moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }

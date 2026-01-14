@@ -30,6 +30,7 @@ dependencyResolutionManagement {
 include(":feature:auth")
 include(":feature:main")
 
+include(":feature:pantry")
 include(":feature:onboarding")
 include(":feature:settings")
 include(":di")

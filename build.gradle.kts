@@ -8,10 +8,9 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
 
+    // Google Services (Firebase)
+    alias(libs.plugins.google.services) apply false
+
     // Serialization (JSON) - NEEDED for Ktor
     alias(libs.plugins.kotlinSerialization) apply false
-
-    // Database (Room) - NEEDED for shared
-    alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.room) apply false
 }

@@ -68,9 +68,6 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
-
-            // CameraX Fix (The 16KB Page Size issue logic lives where the camera lib is)
-            implementation(libs.androidx.camera.core)
         }
         commonMain.dependencies {
             // --- UI Essentials ---
@@ -101,8 +98,7 @@ kotlin {
             // --- Capabilities (ShelfLife Stack) ---
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor)
-            implementation(libs.peekaboo.ui)
-            implementation(libs.kmp.notifier)
+            implementation(libs.kscan)
 
             // --- Data & State ---
             implementation(libs.kotlinx.coroutines.core)
@@ -118,7 +114,7 @@ kotlin {
             implementation(libs.material3.adaptive)
 
             // --- Database (Room) ---
-            implementation(libs.androidx.room.runtime)
+            implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
         }
         iosMain.dependencies {
@@ -147,9 +143,9 @@ room {
 
 // KSP Configuration for Room (Must be in the module that uses Room)
 dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspIosX64", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
     debugImplementation(compose.uiTooling)
 }

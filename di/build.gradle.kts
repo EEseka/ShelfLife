@@ -26,6 +26,9 @@ kotlin {
     }
 
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -41,10 +44,18 @@ kotlin {
             implementation(libs.datastore) // to create datastore in specific platform
             implementation(libs.datastore.preferences) // to create datastore in specific platform
 
+            // To Create Room Database in DI
+            implementation(libs.sqlite.bundled)
+            implementation(libs.room.runtime)
+
             implementation(project(":shared"))
             implementation(project(":feature:onboarding"))
             implementation(project(":feature:auth"))
             implementation(project(":feature:settings"))
+            implementation(project(":feature:pantry"))
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

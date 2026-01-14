@@ -12,4 +12,5 @@ interface SettingsService {
     suspend fun setOnboardingCompleted()
     suspend fun saveUser(user: User?) // Pass null to "Clear" (Logout)
     suspend fun setNotificationPreferences(preferences: NotificationPreferences)
+    suspend fun clearUserPreferences()
 }

@@ -6,6 +6,7 @@ import com.eeseka.shelflife.shared.data.util.ConnectivityObserver
 import com.eeseka.shelflife.shared.domain.auth.AuthService
 import com.eeseka.shelflife.shared.domain.auth.User
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
+import com.eeseka.shelflife.shared.domain.notification.NotificationService
 import com.eeseka.shelflife.shared.domain.settings.AppTheme
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.domain.util.onFailure
@@ -33,7 +34,8 @@ class SettingsViewModel(
     private val settingsService: SettingsService,
     private val authService: AuthService,
     private val connectivityObserver: ConnectivityObserver,
-    private val shelfLifeLogger: ShelfLifeLogger
+    private val shelfLifeLogger: ShelfLifeLogger,
+    private val notificationService: NotificationService
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state = combine(
@@ -54,8 +56,8 @@ class SettingsViewModel(
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = SettingsState()
     )
-    private val eventChannel = Channel<SettingsEvent>()
-    val events = eventChannel.receiveAsFlow()
+    private val _eventChannel = Channel<SettingsEvent>()
+    val events = _eventChannel.receiveAsFlow()
 
     fun onAction(action: SettingsAction) {
         when (action) {
@@ -84,6 +86,9 @@ class SettingsViewModel(
             settingsService.setNotificationPreferences(
                 state.value.notification.copy(reminderTime = time)
             )
+            if (state.value.notification.allowed) {
+                notificationService.scheduleDailyNotification(time)
+            }
         }
     }
 
@@ -97,14 +102,13 @@ class SettingsViewModel(
                 settingsService.setNotificationPreferences(
                     state.value.notification.copy(allowed = false)
                 )
-                // TODO: Cancel daily alarm when notification manager is implemented
-                // notificationScheduler.cancelDailyAlarm()
+                notificationService.cancelDailyNotification()
             }
         } else {
             // CASE 1: User wants to turn ON
             // Send event to check permission state first, then request if needed
             viewModelScope.launch {
-                eventChannel.send(SettingsEvent.CheckAndRequestNotificationPermission)
+                _eventChannel.send(SettingsEvent.CheckAndRequestNotificationPermission)
             }
         }
     }
@@ -117,8 +121,7 @@ class SettingsViewModel(
                     settingsService.setNotificationPreferences(
                         state.value.notification.copy(allowed = true)
                     )
-                    // TODO: Schedule daily alarm at notification.reminderTime when notification manager is implemented
-                    // notificationScheduler.scheduleDailyAlarm(state.value.notification.reminderTime)
+                    notificationService.scheduleDailyNotification(state.value.notification.reminderTime)
                 }
 
                 PermissionState.DENIED -> {
@@ -133,7 +136,7 @@ class SettingsViewModel(
                     settingsService.setNotificationPreferences(
                         state.value.notification.copy(allowed = false)
                     )
-                    eventChannel.send(SettingsEvent.OpenAppSettings)
+                    _eventChannel.send(SettingsEvent.OpenAppSettings)
                 }
 
                 PermissionState.NOT_DETERMINED -> {
@@ -152,15 +155,15 @@ class SettingsViewModel(
                 authService.reloadAndGetUpgradedUser()
                     .onSuccess { user ->
                         settingsService.saveUser(user)
-                        eventChannel.send(SettingsEvent.Success(UiText.Resource(Res.string.auth_success)))
+                        _eventChannel.send(SettingsEvent.Success(UiText.Resource(Res.string.auth_success)))
                     }
                     .onFailure { error ->
                         // Handle rare edge case where reload fails
-                        eventChannel.send(SettingsEvent.Error(error.toUiText()))
+                        _eventChannel.send(SettingsEvent.Error(error.toUiText()))
                     }
             } else {
                 shelfLifeLogger.warn("Google sign in succeeded but user is null")
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
             }
         }
     }
@@ -168,16 +171,16 @@ class SettingsViewModel(
     private fun handleGoogleError(error: Throwable) {
         viewModelScope.launch {
             if (error.message?.contains("A network error") == true) {
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.internet_connection_unavailable)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.internet_connection_unavailable)))
             } else if (error.message?.contains("Idtoken is null") == true) {
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.sign_in_canceled)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.sign_in_canceled)))
             } else if (error.message?.contains("The user account has been disabled") == true) {
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.account_disabled)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.account_disabled)))
             } else if (error.message?.contains("This credential is already associated with a different user") == true) {
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.account_disabled)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.account_disabled)))
             } else {
                 shelfLifeLogger.error(error.message ?: "Unknown error", error.cause)
-                eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.unknown_error_occurred)))
             }
         }
     }
@@ -185,13 +188,15 @@ class SettingsViewModel(
     private fun signOut() {
         _state.update { it.copy(isSigningOut = true) }
         viewModelScope.launch {
+            // Cancel Alarms (Good hygiene)
+            notificationService.cancelDailyNotification()
             authService.signOut()
                 .onSuccess {
                     _state.update { it.copy(isSigningOut = false) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isSigningOut = false) }
-                    eventChannel.send(SettingsEvent.Error(error.toUiText()))
+                    _eventChannel.send(SettingsEvent.Error(error.toUiText()))
                 }
         }
     }
@@ -199,14 +204,15 @@ class SettingsViewModel(
     private fun deleteAccount() {
         _state.update { it.copy(isDeletingAccount = true) }
         viewModelScope.launch {
+            notificationService.cancelDailyNotification()
             authService.deleteAccount()
                 .onSuccess {
                     _state.update { it.copy(isDeletingAccount = false) }
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isDeletingAccount = false) }
-                    eventChannel.send(SettingsEvent.Error(error.toUiText()))
+                    _eventChannel.send(SettingsEvent.Error(error.toUiText()))
                 }
         }
-    } // Dont forget to clean up in firebase console
+    } // TODO: Don't forget to clean up in firebase console
 }

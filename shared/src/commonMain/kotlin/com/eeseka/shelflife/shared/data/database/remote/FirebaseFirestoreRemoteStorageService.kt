@@ -44,7 +44,7 @@ class FirebaseFirestoreRemoteStorageService(
     override suspend fun createPantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.Storage> {
+    ): EmptyResult<DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val pantryCollection =
                 Firebase.firestore.collection(BASE_COLLECTION_PATH).document(userId)
@@ -63,7 +63,7 @@ class FirebaseFirestoreRemoteStorageService(
         }
     }
 
-    override suspend fun getPantryItems(userId: String): Result<List<PantryItem>, DataError.Storage> {
+    override suspend fun getPantryItems(userId: String): Result<List<PantryItem>, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val pantryCollection =
                 Firebase.firestore.collection(BASE_COLLECTION_PATH).document(userId)
@@ -78,7 +78,7 @@ class FirebaseFirestoreRemoteStorageService(
     override suspend fun getPantryItem(
         userId: String,
         pantryItemId: String
-    ): Result<PantryItem, DataError.Storage> {
+    ): Result<PantryItem, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
                 .collection(BASE_COLLECTION_PATH).document(userId)
@@ -97,7 +97,7 @@ class FirebaseFirestoreRemoteStorageService(
     override suspend fun updatePantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.Storage> {
+    ): EmptyResult<DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
                 .collection(BASE_COLLECTION_PATH).document(userId)
@@ -123,7 +123,7 @@ class FirebaseFirestoreRemoteStorageService(
     override suspend fun deletePantryItem(
         userId: String,
         pantryItemId: String
-    ): EmptyResult<DataError.Storage> {
+    ): EmptyResult<DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
                 .collection(BASE_COLLECTION_PATH).document(userId)
@@ -238,6 +238,12 @@ class FirebaseFirestoreRemoteStorageService(
      */
     private suspend fun deleteImageFromStorage(downloadUrl: String?) {
         if (downloadUrl == null) return
+
+        // Only attempt to delete if it's actually hosted by us!
+        // This prevents trying to delete OpenFoodFacts URLs
+        if (!downloadUrl.contains("firebasestorage.googleapis.com")) {
+            return
+        }
 
         try {
             val storagePath = extractFirebaseStoragePath(downloadUrl) ?: return

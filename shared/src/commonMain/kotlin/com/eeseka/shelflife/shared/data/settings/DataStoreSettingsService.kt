@@ -129,4 +129,11 @@ class DataStoreSettingsService(
             }
         }
     }
+
+    override suspend fun clearUserPreferences() {
+        dataStore.edit { prefs ->
+            prefs.remove(KEY_NOTIFICATION_PREFERENCES)
+            prefs.remove(KEY_THEME)
+        }
+    }
 }
