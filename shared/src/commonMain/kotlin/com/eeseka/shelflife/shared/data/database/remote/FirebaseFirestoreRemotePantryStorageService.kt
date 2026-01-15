@@ -4,7 +4,7 @@ import com.eeseka.shelflife.shared.data.database.util.createStorageFile
 import com.eeseka.shelflife.shared.data.dto.PantryItemSerializable
 import com.eeseka.shelflife.shared.data.mappers.toDomain
 import com.eeseka.shelflife.shared.data.mappers.toSerializable
-import com.eeseka.shelflife.shared.domain.database.remote.RemoteStorageService
+import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import com.eeseka.shelflife.shared.domain.util.DataError
@@ -33,7 +33,7 @@ private class FirebaseFirestoreNotFoundException(message: String) : Exception(me
  */
 class FirebaseFirestoreRemoteStorageService(
     private val shelfLifeLogger: ShelfLifeLogger
-) : RemoteStorageService {
+) : RemotePantryStorageService {
     companion object {
         private const val BASE_COLLECTION_PATH = "users"
         private const val SUB_COLLECTION_PATH = "pantry"

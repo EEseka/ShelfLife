@@ -249,8 +249,7 @@ class PantryFormViewModel(
             purchaseDate = currentState.purchaseDate ?: currentDate(),
             openDate = currentState.openDate,
             imageUrl = finalImageUrl,
-            thumbnailUrl = if (finalImageUrl != original.imageUrl) null else original.thumbnailUrl,
-            updatedAt = Clock.System.now().toEpochMilliseconds()
+            thumbnailUrl = if (finalImageUrl != original.imageUrl) null else original.thumbnailUrl
         )
 
         viewModelScope.launch {

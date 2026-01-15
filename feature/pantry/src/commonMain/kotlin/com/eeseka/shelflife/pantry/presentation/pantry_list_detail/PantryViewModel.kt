@@ -64,7 +64,7 @@ class PantryViewModel(
         currentState.copy(items = items)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Companion.WhileSubscribed(5_000L),
+        started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = PantryState()
     )
 
@@ -279,10 +279,9 @@ class PantryViewModel(
 
     @OptIn(ExperimentalTime::class)
     private fun createEmptyPantryItem(): PantryItem {
-        val today =
-            Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault()).date
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
         return PantryItem(
-            id = Uuid.Companion.random().toString(),
+            id = Uuid.random().toString(),
             barcode = "",
             name = "",
             expiryDate = today,

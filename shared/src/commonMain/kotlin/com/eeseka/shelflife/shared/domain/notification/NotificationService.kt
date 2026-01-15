@@ -24,3 +24,5 @@ interface NotificationService {
      */
     suspend fun refreshNotifications()
 }
+
+// TODO: Improve to send notifs not just on expiry today but periodically and also improve notifs content

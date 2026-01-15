@@ -3,7 +3,7 @@ package com.eeseka.shelflife.shared.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.shared.domain.auth.AuthService
-import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.navigation.Screen
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val authService: AuthService,
     private val settingsService: SettingsService,
-    private val localStorageService: LocalStorageService,
+    private val localStorageService: LocalPantryStorageService,
 ) : ViewModel() {
 
     init {

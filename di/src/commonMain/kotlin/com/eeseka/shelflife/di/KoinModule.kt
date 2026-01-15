@@ -10,7 +10,7 @@ import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryViewMod
 import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.auth.FirebaseAuthService
 import com.eeseka.shelflife.shared.data.database.local.DatabaseFactory
-import com.eeseka.shelflife.shared.data.database.local.RoomLocalStorageService
+import com.eeseka.shelflife.shared.data.database.local.RoomLocalPantryStorageService
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteStorageService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
 import com.eeseka.shelflife.shared.data.media.NativeImageCompressionService
@@ -19,8 +19,8 @@ import com.eeseka.shelflife.shared.data.networking.KtorApiService
 import com.eeseka.shelflife.shared.data.notification.NativeNotificationService
 import com.eeseka.shelflife.shared.data.settings.DataStoreSettingsService
 import com.eeseka.shelflife.shared.domain.auth.AuthService
-import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
-import com.eeseka.shelflife.shared.domain.database.remote.RemoteStorageService
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.media.ImageCompressionService
 import com.eeseka.shelflife.shared.domain.networking.ApiService
@@ -44,8 +44,8 @@ val sharedModule = module {
     }
     singleOf(::DataStoreSettingsService) bind SettingsService::class
     singleOf(::FirebaseAuthService) bind AuthService::class
-    singleOf(::FirebaseFirestoreRemoteStorageService) bind RemoteStorageService::class
-    singleOf(::RoomLocalStorageService) bind LocalStorageService::class
+    singleOf(::FirebaseFirestoreRemoteStorageService) bind RemotePantryStorageService::class
+    singleOf(::RoomLocalPantryStorageService) bind LocalPantryStorageService::class
     singleOf(::NativeNotificationService) bind NotificationService::class
     singleOf(::NativeImageCompressionService) bind ImageCompressionService::class
     singleOf(::KtorApiService) bind ApiService::class

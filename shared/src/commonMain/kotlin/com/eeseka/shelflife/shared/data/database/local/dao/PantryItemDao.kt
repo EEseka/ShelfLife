@@ -26,6 +26,9 @@ interface PantryItemDao {
     @Query("SELECT * FROM pantry_items WHERE barcode = :barcode LIMIT 1")
     suspend fun getPantryItemByBarcode(barcode: String): PantryItemEntity?
 
+    @Query("SELECT * FROM pantry_items WHERE barcode = :barcode AND storageLocation = :location LIMIT 1")
+    suspend fun getPantryItemByBarcodeAndLocation(barcode: String, location: String): PantryItemEntity?
+
     @Query("DELETE FROM pantry_items WHERE id = :id")
     suspend fun deletePantryItemById(id: String)
 

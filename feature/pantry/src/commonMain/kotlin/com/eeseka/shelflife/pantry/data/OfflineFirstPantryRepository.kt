@@ -1,8 +1,8 @@
 package com.eeseka.shelflife.pantry.data
 
 import com.eeseka.shelflife.pantry.domain.PantryRepository
-import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
-import com.eeseka.shelflife.shared.domain.database.remote.RemoteStorageService
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.notification.NotificationService
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
@@ -27,8 +27,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 
 class OfflineFirstPantryRepository(
-    private val localDataSource: LocalStorageService,
-    private val remoteDataSource: RemoteStorageService,
+    private val localDataSource: LocalPantryStorageService,
+    private val remoteDataSource: RemotePantryStorageService,
     private val notificationService: NotificationService,
     private val settingsService: SettingsService,
     private val logger: ShelfLifeLogger
@@ -65,7 +65,19 @@ class OfflineFirstPantryRepository(
         query: String,
         location: StorageLocation
     ): Flow<List<PantryItem>> {
-        return localDataSource.searchPantryItemsByLocation(query, location)
+        return if (isBarcode(query)) {
+            flow {
+                localDataSource.searchPantryItemByBarcodeAndLocation(query, location)
+                    .onSuccess { pantryItem ->
+                        pantryItem?.let { emit(listOf(it)) } ?: emit(emptyList())
+                    }.onFailure { error ->
+                        logger.error("Failed to search by barcode and location: $error")
+                        emit(emptyList())
+                    }
+            }
+        } else {
+            localDataSource.searchPantryItemsByLocation(query, location)
+        }
     }
 
     override fun getItemsExpiringSoon(withinDays: Int): Flow<List<PantryItem>> {

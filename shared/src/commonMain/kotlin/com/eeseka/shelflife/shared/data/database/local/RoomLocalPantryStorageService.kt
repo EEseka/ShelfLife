@@ -2,7 +2,7 @@ package com.eeseka.shelflife.shared.data.database.local
 
 import com.eeseka.shelflife.shared.data.mappers.toDomain
 import com.eeseka.shelflife.shared.data.mappers.toEntity
-import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
@@ -18,10 +18,10 @@ import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class RoomLocalStorageService(
+class RoomLocalPantryStorageService(
     pantryItemDatabase: ShelfLifeDatabase,
     private val logger: ShelfLifeLogger,
-) : LocalStorageService {
+) : LocalPantryStorageService {
     private val pantryItemDao = pantryItemDatabase.pantryItemDao
 
     @OptIn(ExperimentalTime::class)
@@ -61,6 +61,12 @@ class RoomLocalStorageService(
     override suspend fun searchPantryItemByBarcode(barcode: String): Result<PantryItem?, DataError.LocalStorage> {
         return safeRoomCall(logger) {
             pantryItemDao.getPantryItemByBarcode(barcode)?.toDomain()
+        }
+    }
+
+    override suspend fun searchPantryItemByBarcodeAndLocation(barcode: String, location: StorageLocation): Result<PantryItem?, DataError.LocalStorage> {
+        return safeRoomCall(logger) {
+            pantryItemDao.getPantryItemByBarcodeAndLocation(barcode, location.name)?.toDomain()
         }
     }
 

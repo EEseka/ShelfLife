@@ -5,7 +5,7 @@ import com.eeseka.shelflife.shared.domain.util.DataError
 import com.eeseka.shelflife.shared.domain.util.EmptyResult
 import com.eeseka.shelflife.shared.domain.util.Result
 
-interface RemoteStorageService {
+interface RemotePantryStorageService {
     suspend fun createPantryItem(
         userId: String,
         pantryItem: PantryItem

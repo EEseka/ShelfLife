@@ -16,7 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.eeseka.shelflife.shared.R
-import com.eeseka.shelflife.shared.domain.database.local.LocalStorageService
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -37,7 +37,7 @@ import kotlin.time.ExperimentalTime
 
 class ScheduledAlarmReceiver : BroadcastReceiver(), KoinComponent {
 
-    private val localStorage: LocalStorageService by inject()
+    private val localStorage: LocalPantryStorageService by inject()
 
     companion object {
         private const val CHANNEL_ID = "expiry_alerts"

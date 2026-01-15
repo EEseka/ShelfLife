@@ -7,7 +7,7 @@ import com.eeseka.shelflife.shared.domain.util.EmptyResult
 import com.eeseka.shelflife.shared.domain.util.Result
 import kotlinx.coroutines.flow.Flow
 
-interface LocalStorageService {
+interface LocalPantryStorageService {
     suspend fun upsertPantryItem(
         pantryItem: PantryItem,
         isSynced: Boolean
@@ -22,6 +22,8 @@ interface LocalStorageService {
     fun searchPantryItemsByName(query: String): Flow<List<PantryItem>>
 
     suspend fun searchPantryItemByBarcode(barcode: String): Result<PantryItem?, DataError.LocalStorage>
+
+    suspend fun searchPantryItemByBarcodeAndLocation(barcode: String, location: StorageLocation): Result<PantryItem?, DataError.LocalStorage>
 
     fun searchPantryItemsByLocation(
         query: String,
