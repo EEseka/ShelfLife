@@ -38,6 +38,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.pantry.presentation.components.DetailActionFooter
@@ -87,6 +89,7 @@ fun PantryDetailScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val hapticFeedback = LocalHapticFeedback.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -247,7 +250,10 @@ fun PantryDetailScreen(
                 },
                 confirmButton = {
                     if (!isDeleteLoading) {
-                        TextButton(onClick = { onAction(PantryAction.OnDeleteItem(item.id)) }) {
+                        TextButton(onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onAction(PantryAction.OnDeleteItem(item.id))
+                        }) {
                             Text(
                                 stringResource(Res.string.delete_item),
                                 color = MaterialTheme.colorScheme.error,
@@ -262,7 +268,10 @@ fun PantryDetailScreen(
                 },
                 dismissButton = if (!isDeleteLoading) {
                     {
-                        TextButton(onClick = { showDeleteDialog = false }) {
+                        TextButton(onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                            showDeleteDialog = false
+                        }) {
                             Text(stringResource(Res.string.cancel))
                         }
                     }
@@ -280,11 +289,16 @@ private fun PantryDetailTopBar(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     TopAppBar(
         title = {},
         navigationIcon = {
             if (showBackButton) {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                    onBackClick()
+                }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(Res.string.back)
@@ -293,13 +307,19 @@ private fun PantryDetailTopBar(
             }
         },
         actions = {
-            IconButton(onClick = onEditClick) {
+            IconButton(onClick = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                onEditClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = stringResource(Res.string.edit_item)
                 )
             }
-            IconButton(onClick = onDeleteClick) {
+            IconButton(onClick = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                onDeleteClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(Res.string.delete_item),

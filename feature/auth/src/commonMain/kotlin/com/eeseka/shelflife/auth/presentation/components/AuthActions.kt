@@ -14,6 +14,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
@@ -40,6 +42,8 @@ fun AuthActions(
     onGuestClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -56,8 +60,10 @@ fun AuthActions(
                             profilePictureUrl = user.photoURL
                         )
                     }
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                     onGoogleSignInSuccess(user)
                 }.onFailure { error ->
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
                     onGoogleSignInFailure(error)
                 }
             }

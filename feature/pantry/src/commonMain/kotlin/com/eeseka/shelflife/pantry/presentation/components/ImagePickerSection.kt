@@ -23,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
@@ -39,13 +41,18 @@ fun ImagePickerSection(
     onImagePick: () -> Unit,
     onImageRemove: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Box(
         modifier = Modifier
             .size(120.dp)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.large)
-            .clickable(onClick = onImagePick),
+            .clickable(onClick = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                onImagePick()
+            }),
         contentAlignment = Alignment.Center
     ) {
         if (imageUri != null) {
@@ -64,7 +71,10 @@ fun ImagePickerSection(
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f))
-                    .clickable(onClick = onImageRemove),
+                    .clickable(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onImageRemove()
+                    }),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

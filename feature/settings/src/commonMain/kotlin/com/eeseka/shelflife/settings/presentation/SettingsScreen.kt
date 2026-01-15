@@ -33,6 +33,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.settings.presentation.components.AuthenticatedProfileCard
@@ -87,6 +89,7 @@ fun SettingsScreen(
     val permissionController = rememberPermissionController()
     val config = currentDeviceConfiguration()
     val scope = rememberCoroutineScope()
+    val hapticFeedback = LocalHapticFeedback.current
 
     var isSignInWithGoogleLoading by remember { mutableStateOf(false) }
 
@@ -199,7 +202,6 @@ fun SettingsScreen(
         snackbarHostState = snackbarHostState,
         topBar = { SettingsTopBar() },
         modifier = Modifier.fillMaxSize()
-//            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Box(
             modifier = Modifier
@@ -293,6 +295,7 @@ fun SettingsScreen(
                 onDismissRequest = { showTimePicker = false },
                 confirmButton = {
                     Button(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                         onAction(
                             SettingsAction.OnSetNotificationTime(
                                 LocalTime(
@@ -306,6 +309,7 @@ fun SettingsScreen(
                 },
                 dismissButton = {
                     TextButton(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                         showTimePicker = false
                     }) { Text(stringResource(Res.string.cancel)) }
                 },
@@ -320,12 +324,14 @@ fun SettingsScreen(
                 text = { Text(stringResource(Res.string.sign_out_question)) },
                 confirmButton = {
                     Button(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                         showLogoutConfirmation = false
                         onAction(SettingsAction.OnSignOutClicked)
                     }) { Text(stringResource(Res.string.sign_out)) }
                 },
                 dismissButton = {
                     TextButton(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                         showLogoutConfirmation = false
                     }) { Text(stringResource(Res.string.cancel)) }
                 }
@@ -351,6 +357,7 @@ fun SettingsScreen(
                 confirmButton = {
                     Button(
                         onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
                             onAction(SettingsAction.OnDeleteAccountClicked)
                             showDeleteAccountConfirmation = false
                         },
@@ -358,7 +365,10 @@ fun SettingsScreen(
                     ) { Text(if (isGuest) stringResource(Res.string.reset) else stringResource(Res.string.delete)) }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDeleteAccountConfirmation = false }) {
+                    TextButton(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        showDeleteAccountConfirmation = false
+                    }) {
                         Text(stringResource(Res.string.cancel))
                     }
                 }

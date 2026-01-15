@@ -24,7 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -47,13 +49,17 @@ fun PantryItemCard(
     item: PantryItem,
     onClick: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     val expiryState = calculateExpiryState(item.expiryDate)
 
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth(),
-        onClick = onClick
+        onClick = {
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+            onClick()
+        }
     ) {
         Column {
             Box(contentAlignment = Alignment.Center) {

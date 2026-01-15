@@ -47,7 +47,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -70,6 +72,8 @@ fun PantryScannerSheet(
     isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Surface(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (isLoading) {
@@ -95,9 +99,13 @@ fun PantryScannerSheet(
                     modifier = Modifier.fillMaxSize()
                 ) { result ->
                     when (result) {
-                        is BarcodeResult.OnSuccess -> onBarcodeDetected(result.barcode.data)
+                        is BarcodeResult.OnSuccess -> {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onBarcodeDetected(result.barcode.data)
+                        }
+
                         is BarcodeResult.OnFailed -> {
-                            // TODO: Add haptic vibration when i decide to implement haptics
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
                         }
 
                         BarcodeResult.OnCanceled -> onDismiss()
@@ -137,7 +145,13 @@ fun PantryScannerSheet(
                         .padding(16.dp)
                 ) {
                     FilledTonalIconButton(
-                        onClick = { scannerController.setTorch(!scannerController.torchEnabled) },
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(
+                                if (scannerController.torchEnabled) HapticFeedbackType.ToggleOff
+                                else HapticFeedbackType.ToggleOn
+                            )
+                            scannerController.setTorch(!scannerController.torchEnabled)
+                        },
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
@@ -182,7 +196,10 @@ fun PantryScannerSheet(
                     .padding(16.dp)
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.6f), CircleShape)
             ) {
-                IconButton(onClick = onDismiss) {
+                IconButton(onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                    onDismiss()
+                }) {
                     Icon(Icons.Default.Close, stringResource(Res.string.close))
                 }
             }

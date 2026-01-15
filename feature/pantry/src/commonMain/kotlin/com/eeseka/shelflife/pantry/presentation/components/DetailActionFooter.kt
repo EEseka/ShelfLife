@@ -21,6 +21,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
@@ -35,6 +37,8 @@ fun DetailActionFooter(
     onConsumed: () -> Unit,
     onWasted: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Surface(
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 8.dp,
@@ -48,7 +52,10 @@ fun DetailActionFooter(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
-                    onClick = onWasted,
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                        onWasted()
+                    },
                     modifier = Modifier.weight(1f).height(56.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
@@ -62,7 +69,10 @@ fun DetailActionFooter(
                 }
 
                 Button(
-                    onClick = onConsumed,
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
+                        onConsumed()
+                    },
                     modifier = Modifier.weight(1f).height(56.dp)
                 ) {
                     Icon(Icons.Default.CheckCircle, null)

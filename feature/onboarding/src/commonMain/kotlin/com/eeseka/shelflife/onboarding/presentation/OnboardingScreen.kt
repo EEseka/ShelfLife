@@ -29,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.onboarding.presentation.components.OnboardingControls
 import com.eeseka.shelflife.onboarding.presentation.components.OnboardingPageContent
@@ -93,13 +95,17 @@ fun OnboardingScreen(
         }
     }
 
+    val hapticFeedback = LocalHapticFeedback.current
+
     val onOnboardingButtonClick: () -> Unit = {
         if (!isProcessing) {
             if (pagerState.currentPage < pages.size - 1) {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentTick)
                 scope.launch {
                     pagerState.animateScrollToPage(pagerState.currentPage + 1)
                 }
             } else {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                 isProcessing = true
                 scope.launch {
                     runCatching {

@@ -43,7 +43,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -97,6 +99,8 @@ fun PantryItemFormSheetContent(
     val mediaPicker = rememberMediaPicker()
     val scope = rememberCoroutineScope()
     var showImageSourceDialog by remember { mutableStateOf(false) }
+
+    val hapticFeedback = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
 
     val quickUnits = listOf(
@@ -129,7 +133,10 @@ fun PantryItemFormSheetContent(
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
-            IconButton(onClick = onDismiss) {
+            IconButton(onClick = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                onDismiss()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(Res.string.cancel)
@@ -217,9 +224,15 @@ fun PantryItemFormSheetContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     quickUnits.forEach { unit ->
+                        val isSelected = state.quantityUnit.equals(unit, ignoreCase = true)
                         InputChip(
-                            selected = state.quantityUnit.equals(unit, ignoreCase = true),
-                            onClick = { onAction(PantryFormAction.UpdateQuantityUnit(unit)) },
+                            selected = isSelected,
+                            onClick = {
+                                if (!isSelected) {
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                                    onAction(PantryFormAction.UpdateQuantityUnit(unit))
+                                }
+                            },
                             label = { Text(unit) },
                             border = null,
                             colors = InputChipDefaults.inputChipColors(
@@ -292,6 +305,7 @@ fun PantryItemFormSheetContent(
         }
         Button(
             onClick = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                 focusManager.clearFocus()
                 onAction(PantryFormAction.OnSaveClick)
             },

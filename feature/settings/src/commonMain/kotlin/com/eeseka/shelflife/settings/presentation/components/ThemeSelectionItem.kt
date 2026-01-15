@@ -22,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
@@ -36,6 +38,8 @@ import shelflife.feature.settings.generated.resources.system
 
 @Composable
 fun ThemeSelectionItem(currentTheme: AppTheme, onThemeSelected: (AppTheme) -> Unit) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,17 +86,32 @@ fun ThemeSelectionItem(currentTheme: AppTheme, onThemeSelected: (AppTheme) -> Un
             ThemeOption(
                 label = stringResource(Res.string.system),
                 isSelected = currentTheme == AppTheme.SYSTEM,
-                onClick = { onThemeSelected(AppTheme.SYSTEM) }
+                onClick = {
+                    if (currentTheme != AppTheme.SYSTEM) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        onThemeSelected(AppTheme.SYSTEM)
+                    }
+                }
             )
             ThemeOption(
                 label = stringResource(Res.string.light),
                 isSelected = currentTheme == AppTheme.LIGHT,
-                onClick = { onThemeSelected(AppTheme.LIGHT) }
+                onClick = {
+                    if (currentTheme != AppTheme.LIGHT) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        onThemeSelected(AppTheme.LIGHT)
+                    }
+                }
             )
             ThemeOption(
                 label = stringResource(Res.string.dark),
                 isSelected = currentTheme == AppTheme.DARK,
-                onClick = { onThemeSelected(AppTheme.DARK) }
+                onClick = {
+                    if (currentTheme != AppTheme.DARK) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        onThemeSelected(AppTheme.DARK)
+                    }
+                }
             )
         }
     }

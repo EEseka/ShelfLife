@@ -15,7 +15,7 @@
     <string name="error_storage_no_internet">No internet connection. Please check your network.</string>
     <string name="error_storage_server">Cloud storage is having trouble. Please try again later.</string>
     <string name="error_storage_serialization">Received invalid data from cloud storage.</string>
-    <string name="error_storage_permission_denied">You don\'t have permission to access this resource.</string>
+    <string name="error_storage_permission_denied">You don't have permission to access this resource.</string>
     <string name="error_storage_quota_exceeded">Storage quota exceeded. Please free up space or upgrade.</string>
     <string name="error_storage_too_many_requests">Too many storage requests! Please wait a moment.</string>
     <string name="error_storage_unknown">An unexpected cloud storage error occurred.</string>

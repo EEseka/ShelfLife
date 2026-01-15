@@ -34,18 +34,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryAction
-import com.eeseka.shelflife.pantry.presentation.pantry_list.PantryListEvent
-import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryState
 import com.eeseka.shelflife.pantry.presentation.components.EmptyPantryView
 import com.eeseka.shelflife.pantry.presentation.components.PantryItemCard
 import com.eeseka.shelflife.pantry.presentation.components.PantryListHeader
 import com.eeseka.shelflife.pantry.presentation.components.PantryListShimmer
 import com.eeseka.shelflife.pantry.presentation.components.SpeedDialFab
+import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryAction
+import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryState
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
 import com.eeseka.shelflife.shared.presentation.util.ShelfLifeSnackbarVisuals
@@ -65,6 +66,7 @@ fun PantryListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val focusManager = LocalFocusManager.current
+    val hapticFeedback = LocalHapticFeedback.current
     var isFabExpanded by remember { mutableStateOf(false) }
 
     ObserveAsEvents(events) { event ->
@@ -116,7 +118,10 @@ fun PantryListScreen(
             // Content List
             PullToRefreshBox(
                 isRefreshing = state.isRefreshing,
-                onRefresh = { onAction(PantryAction.OnRefresh) },
+                onRefresh = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+                    onAction(PantryAction.OnRefresh)
+                },
                 modifier = Modifier.fillMaxSize()
             ) {
                 val contentState = when {

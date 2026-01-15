@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="scan_failed">Couldn\'t find product. Try manual entry.</string>
+    <string name="scan_failed">Couldn’t find product. Try manual entry.</string>
     <string name="item_created">Item created successfully.</string>
     <string name="item_updated">Item updated successfully.</string>
     <string name="item_deleted">Item deleted.</string>
@@ -67,7 +67,7 @@
     <string name="gallery">Gallery</string>
     <string name="add_to_pantry">Add to Pantry</string>
     <string name="brand_label">Brand</string>
-    <string name="brand_placeholder">e.g. Heinz, Kellogg\'s</string>
+    <string name="brand_placeholder">e.g. Heinz, Kellogg's</string>
     <string name="expiry_date_past_error">Item already expired</string>
 
     <string name="expires_in_one_day">Expires tomorrow</string>

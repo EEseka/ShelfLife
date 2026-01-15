@@ -17,6 +17,8 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
@@ -41,20 +43,28 @@ fun PantryListHeader(
     onClearFocus: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         SearchBar(
             inputField = {
                 SearchBarDefaults.InputField(
                     query = searchQuery,
                     onQueryChange = onQueryChange,
-                    onSearch = { onClearFocus() },
+                    onSearch = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onClearFocus()
+                    },
                     expanded = false,
                     onExpandedChange = {},
                     placeholder = { Text(stringResource(Res.string.search_pantry)) },
                     leadingIcon = { Icon(Icons.Default.Search, null) },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
-                            IconButton(onClick = onClearSearchAndFocus) {
+                            IconButton(onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                                onClearSearchAndFocus()
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
                                     contentDescription = stringResource(Res.string.close)
@@ -74,13 +84,23 @@ fun PantryListHeader(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = selectedLocation == null,
-                onClick = { onLocationChange(null) },
+                onClick = {
+                    if (selectedLocation != null) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                        onLocationChange(null)
+                    }
+                },
                 label = { Text(stringResource(Res.string.all)) },
             )
             StorageLocation.entries.forEach { location ->
                 FilterChip(
                     selected = selectedLocation == location,
-                    onClick = { onLocationChange(location) },
+                    onClick = {
+                        if (selectedLocation != location) {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                            onLocationChange(location)
+                        }
+                    },
                     label = {
                         Text(
                             when (location) {

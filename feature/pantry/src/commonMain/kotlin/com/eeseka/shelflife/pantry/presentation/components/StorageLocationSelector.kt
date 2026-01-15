@@ -10,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
@@ -26,6 +28,8 @@ fun StorageLocationSelector(
     currentLocation: StorageLocation,
     onLocationSelected: (StorageLocation) -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = stringResource(Res.string.storage_location),
@@ -36,7 +40,12 @@ fun StorageLocationSelector(
             StorageLocation.entries.forEach { location ->
                 FilterChip(
                     selected = currentLocation == location,
-                    onClick = { onLocationSelected(location) },
+                    onClick = {
+                        if (currentLocation != location) {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                            onLocationSelected(location)
+                        }
+                    },
                     label = {
                         Text(
                             when (location) {

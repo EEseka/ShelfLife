@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.settings.presentation.util.formatTo12Hour
@@ -42,6 +44,8 @@ fun NotificationItem(
     onToggle: () -> Unit,
     onTimeClick: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -78,7 +82,10 @@ fun NotificationItem(
                         ),
                         style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable(onClick = onTimeClick)
+                        modifier = Modifier.clickable(onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                            onTimeClick()
+                        })
                     )
                 }
             }
@@ -86,7 +93,13 @@ fun NotificationItem(
 
         Switch(
             checked = allowed,
-            onCheckedChange = { onToggle() },
+            onCheckedChange = {
+                hapticFeedback.performHapticFeedback(
+                    if (allowed) HapticFeedbackType.ToggleOff
+                    else HapticFeedbackType.ToggleOn
+                )
+                onToggle()
+            },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
                 checkedTrackColor = MaterialTheme.colorScheme.primary

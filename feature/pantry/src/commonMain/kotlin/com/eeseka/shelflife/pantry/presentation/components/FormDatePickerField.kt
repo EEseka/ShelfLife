@@ -25,6 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -55,6 +57,8 @@ fun FormDatePickerField(
     val interactionSource = remember { MutableInteractionSource() }
     val displayText = date?.toString() ?: ""
 
+    val hapticFeedback = LocalHapticFeedback.current
+
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
             value = displayText,
@@ -67,12 +71,18 @@ fun FormDatePickerField(
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
-                    onClick = { showPicker = true }
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        showPicker = true
+                    }
                 ),
             leadingIcon = { Icon(icon, null) },
             trailingIcon = {
                 if (isClearable && date != null) {
-                    IconButton(onClick = onClear) {
+                    IconButton(onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onClear()
+                    }) {
                         Icon(Icons.Default.Close, null)
                     }
                 }
@@ -102,6 +112,7 @@ fun FormDatePickerField(
             onDismissRequest = { showPicker = false },
             confirmButton = {
                 TextButton(onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                     state.selectedDateMillis?.let { millis ->
                         val newDate = Instant.fromEpochMilliseconds(millis)
                             .toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -112,6 +123,7 @@ fun FormDatePickerField(
             },
             dismissButton = {
                 TextButton(onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                     showPicker = false
                 }) { Text(stringResource(Res.string.cancel)) }
             }

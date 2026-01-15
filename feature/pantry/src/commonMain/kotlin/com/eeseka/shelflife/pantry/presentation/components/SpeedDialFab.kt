@@ -33,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import org.jetbrains.compose.resources.stringResource
@@ -50,6 +52,8 @@ fun SpeedDialFab(
     onManual: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
+
     // Scrim (Dim background when open)
     AnimatedVisibility(
         visible = isExpanded,
@@ -64,7 +68,10 @@ fun SpeedDialFab(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
-                ) { onDismiss() }
+                ) {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                    onDismiss()
+                }
         )
     }
 
@@ -99,7 +106,10 @@ fun SpeedDialFab(
                     )
                 }
                 SmallFloatingActionButton(
-                    onClick = onManual,
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onManual()
+                    },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ) {
@@ -131,7 +141,10 @@ fun SpeedDialFab(
                     )
                 }
                 SmallFloatingActionButton(
-                    onClick = onScan,
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onScan()
+                    },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                 ) {
@@ -144,7 +157,13 @@ fun SpeedDialFab(
         val rotation by animateFloatAsState(targetValue = if (isExpanded) 45f else 0f)
 
         FloatingActionButton(
-            onClick = onToggle,
+            onClick = {
+                hapticFeedback.performHapticFeedback(
+                    if (isExpanded) HapticFeedbackType.ToggleOff
+                    else HapticFeedbackType.ToggleOn
+                )
+                onToggle()
+            },
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ) {
@@ -188,7 +207,7 @@ private fun SpeedDialFabPreviewDark() {
 @Preview(showBackground = true)
 @Composable
 private fun SpeedDialFabExpandedPreview() {
-    ShelfLifeTheme{
+    ShelfLifeTheme {
         SpeedDialFab(
             isExpanded = true,
             onToggle = {},
