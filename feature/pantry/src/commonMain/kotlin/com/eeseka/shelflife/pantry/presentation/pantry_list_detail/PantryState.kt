@@ -18,6 +18,7 @@ data class PantryState(
     val isCreatingNewItem: Boolean = false,
     val isUpdatingItem: Boolean = false,
     val isDeletingItem: Boolean = false,
+    val isMovingToInsight: Boolean = false,
 
     // --- Scanner / Creation & Update Sheet ---
     val isScannerOpen: Boolean = false,

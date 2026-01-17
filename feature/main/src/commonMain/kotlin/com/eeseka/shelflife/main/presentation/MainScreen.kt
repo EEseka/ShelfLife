@@ -5,10 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -41,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,9 +51,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.eeseka.shelflife.insights.presentation.InsightViewModel
+import com.eeseka.shelflife.insights.presentation.InsightsScreen
 import com.eeseka.shelflife.main.domain.BottomNavigationItem
-import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryViewModel
 import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryListDetailScreen
+import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryViewModel
 import com.eeseka.shelflife.settings.presentation.SettingsScreen
 import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.util.PlatformUtils
@@ -280,7 +279,14 @@ fun NavigationHost(
             )
         }
         composable<Screen.Insights> {
-            PlaceholderScreen("Insights")
+            val viewModel = koinViewModel<InsightViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            InsightsScreen(
+                state = state,
+                events = viewModel.events,
+                onAction = viewModel::onAction
+            )
         }
         composable<Screen.Settings> {
 //            LaunchedEffect(Unit) { onToggleBottomBar(true) } (Just in Case)
@@ -293,22 +299,5 @@ fun NavigationHost(
                 onAction = viewModel::onAction
             )
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(text: String) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
     }
 }

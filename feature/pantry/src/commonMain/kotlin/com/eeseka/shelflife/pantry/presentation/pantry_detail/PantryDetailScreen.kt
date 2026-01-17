@@ -83,6 +83,7 @@ import shelflife.feature.pantry.generated.resources.labels
 fun PantryDetailScreen(
     item: PantryItem,
     isDeleteLoading: Boolean,
+    isMoveLoading: Boolean,
     events: Flow<PantryDetailEvent>,
     onAction: (PantryAction) -> Unit,
     showBackButton: Boolean
@@ -223,9 +224,9 @@ fun PantryDetailScreen(
                 }
             }
             DetailActionFooter(
-                // TODO: Wire these up in ViewModel later
-                onConsumed = { /* onAction(PantryAction.OnConsumeItem(item)) */ },
-                onWasted = { /* onAction(PantryAction.OnWasteItem(item)) */ },
+                isLoading = isMoveLoading,
+                onConsumed = { onAction(PantryAction.OnItemConsumed) },
+                onWasted = { onAction(PantryAction.OnItemWasted) },
             )
         }
         if (showDeleteDialog) {
@@ -249,21 +250,18 @@ fun PantryDetailScreen(
                     }
                 },
                 confirmButton = {
-                    if (!isDeleteLoading) {
-                        TextButton(onClick = {
+                    TextButton(
+                        enabled = !isDeleteLoading,
+                        onClick = {
                             hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                             onAction(PantryAction.OnDeleteItem(item.id))
+                            showDeleteDialog = false
                         }) {
-                            Text(
-                                stringResource(Res.string.delete_item),
-                                color = MaterialTheme.colorScheme.error,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    } else {
-                        TextButton(onClick = {}, enabled = false) {
-                            Spacer(modifier = Modifier.width(1.dp))
-                        }
+                        Text(
+                            stringResource(Res.string.delete_item),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 },
                 dismissButton = if (!isDeleteLoading) {
@@ -336,6 +334,7 @@ fun PantryDetailScreenPreview() {
     ShelfLifeTheme {
         PantryDetailScreen(
             item = previewPantryItem,
+            isMoveLoading = false,
             isDeleteLoading = false,
             events = emptyFlow(),
             onAction = {},

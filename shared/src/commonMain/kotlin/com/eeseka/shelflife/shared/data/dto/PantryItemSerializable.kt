@@ -14,8 +14,8 @@ data class PantryItemSerializable(
     val thumbnailUrl: String? = null,
     
     // Quantity
-    val quantity: Double = 1.0,
-    val quantityUnit: String = "pcs",
+    val quantity: Double,
+    val quantityUnit: String,
     val packagingSize: String? = null,
     
     // Dates stored as ISO-8601 strings for Firestore compatibility
@@ -24,7 +24,7 @@ data class PantryItemSerializable(
     val openDate: String? = null,
     
     // Storage location as string
-    val storageLocation: String = "PANTRY", // "PANTRY", "FRIDGE", or "FREEZER"
+    val storageLocation: String, // "PANTRY", "FRIDGE", or "FREEZER"
 
     // METADATA (CRITICAL FOR OFFLINE-FIRST CONFLICT RESOLUTION)
     val updatedAt: Long,

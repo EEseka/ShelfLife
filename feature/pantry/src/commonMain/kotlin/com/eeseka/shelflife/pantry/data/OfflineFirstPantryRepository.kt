@@ -1,8 +1,12 @@
 package com.eeseka.shelflife.pantry.data
 
 import com.eeseka.shelflife.pantry.domain.PantryRepository
+import com.eeseka.shelflife.shared.domain.database.local.LocalInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.database.remote.RemoteInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
+import com.eeseka.shelflife.shared.domain.insight.InsightItem
+import com.eeseka.shelflife.shared.domain.insight.InsightStatus
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.notification.NotificationService
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
@@ -25,10 +29,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class OfflineFirstPantryRepository(
     private val localDataSource: LocalPantryStorageService,
     private val remoteDataSource: RemotePantryStorageService,
+    private val insightLocalDataSource: LocalInsightStorageService,
+    private val insightRemoteDataSource: RemoteInsightStorageService,
     private val notificationService: NotificationService,
     private val settingsService: SettingsService,
     private val logger: ShelfLifeLogger
@@ -145,6 +155,8 @@ class OfflineFirstPantryRepository(
         // Fire-and-Forget to Firestore SDK
         // We trust Firestore's offline persistence queue to handle this eventually.
         if (localResult is Result.Success) {
+            refreshNotifications()
+
             repositoryScope.launch {
                 remoteDataSource.deletePantryItem(userId, itemId)
                     .onFailure {
@@ -153,6 +165,58 @@ class OfflineFirstPantryRepository(
             }
         }
         return localResult
+    }
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun movePantryItemToInsights(
+        item: PantryItem,
+        status: InsightStatus
+    ): EmptyResult<DataError> {
+        val userId = getUserIdOrError() ?: return Result.Failure(DataError.Auth.FORBIDDEN)
+
+        val insightItem = InsightItem(
+            id = item.id,
+            name = item.name,
+            imageUrl = item.imageUrl,
+            quantity = item.quantity,
+            quantityUnit = item.quantityUnit,
+            status = status,
+            actionDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            nutriScore = item.nutriScore,
+            novaGroup = item.novaGroup,
+            ecoScore = item.ecoScore
+        )
+
+        val insertResult = insightLocalDataSource.upsertInsightItem(insightItem, isSynced = false)
+        if (insertResult is Result.Failure) return insertResult
+
+        val deleteResult = localDataSource.deletePantryItem(item.id)
+
+        if (deleteResult is Result.Failure) {
+            logger.error("Move failed at delete step. Rolling back insight creation.")
+            insightLocalDataSource.deleteInsightItem(insightItem.id)
+            return deleteResult
+        }
+
+        // Background Sync (Parallel)
+        repositoryScope.launch {
+            val insightDeferred = async {
+                insightRemoteDataSource.createInsightItem(userId, insightItem)
+                    .onSuccess {
+                        insightLocalDataSource.upsertInsightItem(insightItem, isSynced = true)
+                    }
+            }
+
+            val deleteDeferred = async {
+                // We are handing ownership of the image file to the Insight module.
+                // The image remains in "pantry_images/..." bucket, but that's fine.
+                remoteDataSource.deletePantryItem(userId, item.id, deleteImage = false)
+            }
+
+            awaitAll(insightDeferred, deleteDeferred)
+        }
+
+        return Result.Success(Unit)
     }
 
     // --- SYNC ---

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.pantry.domain.PantryRepository
 import com.eeseka.shelflife.pantry.presentation.pantry_detail.PantryDetailEvent
 import com.eeseka.shelflife.pantry.presentation.pantry_list.PantryListEvent
+import com.eeseka.shelflife.shared.domain.insight.InsightStatus
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.networking.ApiService
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
@@ -27,9 +28,11 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import shelflife.feature.pantry.generated.resources.Res
+import shelflife.feature.pantry.generated.resources.item_consumed_message
 import shelflife.feature.pantry.generated.resources.item_created
 import shelflife.feature.pantry.generated.resources.item_deleted
 import shelflife.feature.pantry.generated.resources.item_updated
+import shelflife.feature.pantry.generated.resources.item_wasted_message
 import shelflife.feature.pantry.generated.resources.scan_failed
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -61,7 +64,7 @@ class PantryViewModel(
         }
 
     val state = combine(_state, itemsFlow) { currentState, items ->
-        currentState.copy(items = items)
+        currentState.copy(items = items, isLoading = false)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -152,6 +155,9 @@ class PantryViewModel(
             is PantryAction.OnCreateNewItem -> createNewItem(action.item)
             is PantryAction.OnUpdateItem -> updateItem(action.item)
             is PantryAction.OnDeleteItem -> deleteItem(action.id)
+
+            PantryAction.OnItemConsumed -> moveToInsight(true)
+            PantryAction.OnItemWasted -> moveToInsight(false)
         }
     }
 
@@ -160,8 +166,9 @@ class PantryViewModel(
         viewModelScope.launch {
             repository.syncRemotePantry()
                 .onFailure { logger.error("Sync failed: ${it.toUiText().asStringAsync()}") }
-            if (isRefreshing) _state.update { it.copy(isRefreshing = false) }
-            else _state.update { it.copy(isLoading = false) }
+            if (isRefreshing) {
+                _state.update { it.copy(isRefreshing = false) }
+            }
         }
     }
 
@@ -272,7 +279,47 @@ class PantryViewModel(
                 }
                 .onFailure { error ->
                     _state.update { it.copy(isDeletingItem = false) }
-                    _pantryListEventChannel.send(PantryListEvent.Error(error.toUiText()))
+                    _pantryDetailEventChannel.send(PantryDetailEvent.Error(error.toUiText()))
+                }
+        }
+    }
+
+    private fun moveToInsight(isConsumed: Boolean) {
+        val selectedItem = state.value.selectedItem ?: return
+        val status = if (isConsumed) InsightStatus.CONSUMED else InsightStatus.WASTED
+
+        _state.update { it.copy(isMovingToInsight = true) }
+        viewModelScope.launch {
+            repository.movePantryItemToInsights(selectedItem, status)
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isMovingToInsight = false,
+                            selectedItem = null,
+                            isDetailOpen = false
+                        )
+                    }
+                    if (isConsumed) {
+                        _pantryListEventChannel.send(
+                            PantryListEvent.Success(
+                                UiText.Resource(
+                                    Res.string.item_consumed_message
+                                )
+                            )
+                        )
+                    } else {
+                        _pantryListEventChannel.send(
+                            PantryListEvent.Error( // Not an error, I just need the red
+                                UiText.Resource(
+                                    Res.string.item_wasted_message
+                                )
+                            )
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    _state.update { it.copy(isMovingToInsight = false) }
+                    _pantryDetailEventChannel.send(PantryDetailEvent.Error(error.toUiText()))
                 }
         }
     }

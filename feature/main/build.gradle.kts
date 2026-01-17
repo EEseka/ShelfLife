@@ -47,6 +47,7 @@ kotlin {
             implementation(project(":shared"))
             implementation(project(":feature:settings"))
             implementation(project(":feature:pantry"))
+            implementation(project(":feature:insights"))
         }
     }
 }

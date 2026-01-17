@@ -1,5 +1,7 @@
 package com.eeseka.shelflife.shared.data.database.remote
 
+import com.eeseka.shelflife.shared.data.database.util.FirebaseFirestoreConflictException
+import com.eeseka.shelflife.shared.data.database.util.FirebaseFirestoreNotFoundException
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.util.DataError
 import com.eeseka.shelflife.shared.domain.util.Result
@@ -18,6 +20,14 @@ suspend fun <T> safeFirebaseFirestoreCall(
     return try {
         val result = action()
         Result.Success(result)
+        // Specific Custom Exceptions
+    } catch (e: FirebaseFirestoreConflictException) {
+        logger.warn("Conflict: ${e.message}")
+        Result.Failure(DataError.RemoteStorage.CONFLICT)
+    } catch (e: FirebaseFirestoreNotFoundException) {
+        logger.warn("Not Found: ${e.message}")
+        Result.Failure(DataError.RemoteStorage.NOT_FOUND)
+        // Non-Custom Exceptions
     } catch (e: FirebaseFirestoreException) {
         val error = when (e.code) {
             FirestoreExceptionCode.PERMISSION_DENIED -> DataError.RemoteStorage.PERMISSION_DENIED
@@ -88,17 +98,9 @@ suspend fun <T> safeFirebaseFirestoreCall(
         currentCoroutineContext().ensureActive()
         logger.error("Generic Exception error", e)
 
-        // Map common errors including custom exceptions
         val errorMessage = e.message?.lowercase() ?: ""
         val error = when {
-            // Custom exceptions from our code
-            errorMessage.contains("already exists") ->
-                DataError.RemoteStorage.CONFLICT
-
-            errorMessage.contains("not found") ->
-                DataError.RemoteStorage.NOT_FOUND
-
-            // Network errors
+            // Network errors are often generic IOExceptions
             errorMessage.contains("timeout") ||
                     errorMessage.contains("deadline_exceeded") ->
                 DataError.RemoteStorage.REQUEST_TIMEOUT

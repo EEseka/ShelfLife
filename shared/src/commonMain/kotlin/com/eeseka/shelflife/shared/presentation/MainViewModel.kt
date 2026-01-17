@@ -3,6 +3,7 @@ package com.eeseka.shelflife.shared.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.database.local.LocalInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
 import com.eeseka.shelflife.shared.domain.settings.SettingsService
 import com.eeseka.shelflife.shared.navigation.Screen
@@ -18,6 +19,7 @@ class MainViewModel(
     private val authService: AuthService,
     private val settingsService: SettingsService,
     private val localStorageService: LocalPantryStorageService,
+    private val insightLocalDataSource: LocalInsightStorageService
 ) : ViewModel() {
 
     init {
@@ -31,6 +33,7 @@ class MainViewModel(
                 // If we had a user, and now we have a DIFFERENT user (or null), wipe the DB.
                 if (oldUserId != null && oldUserId != newUserId) {
                     localStorageService.deleteAllPantryItems()
+                    insightLocalDataSource.deleteAllInsightItems()
                     settingsService.clearUserPreferences()
                 }
 

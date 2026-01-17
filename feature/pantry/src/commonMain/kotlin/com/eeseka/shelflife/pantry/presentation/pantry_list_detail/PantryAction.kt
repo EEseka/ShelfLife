@@ -26,4 +26,6 @@ sealed interface PantryAction {
     data class OnCreateNewItem(val item: PantryItem) : PantryAction
     data class OnUpdateItem(val item: PantryItem) : PantryAction
     data class OnDeleteItem(val id: String) : PantryAction
+    data object OnItemConsumed : PantryAction
+    data object OnItemWasted : PantryAction
 }

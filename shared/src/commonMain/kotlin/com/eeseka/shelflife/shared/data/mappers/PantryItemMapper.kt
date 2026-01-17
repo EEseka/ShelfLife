@@ -20,7 +20,13 @@ fun PantryItemSerializable.toDomain(): PantryItem {
         expiryDate = LocalDate.parse(expiryDate),
         purchaseDate = LocalDate.parse(purchaseDate),
         openDate = openDate?.let { LocalDate.parse(it) },
-        storageLocation = StorageLocation.valueOf(storageLocation),
+        storageLocation = try {
+            StorageLocation.valueOf(storageLocation)
+        } catch (_: IllegalArgumentException) {
+            // Safety net: If we renamed an enum value in code but DB still has old string,
+            // default to PANTRY instead of crashing the app.
+            StorageLocation.PANTRY
+        },
         updatedAt = updatedAt,
         nutriScore = nutriScore,
         novaGroup = novaGroup,
@@ -74,14 +80,15 @@ fun PantryItemEntity.toDomain(): PantryItem {
         quantityUnit = quantityUnit,
         packagingSize = packagingSize,
         // Convert Epoch Days (Long) back to LocalDate
-        expiryDate = LocalDate.fromEpochDays(expiryDate.toInt()),
-        purchaseDate = LocalDate.fromEpochDays(purchaseDate.toInt()),
-        openDate = openDate?.let { LocalDate.fromEpochDays(it.toInt()) },
+        expiryDate = LocalDate.fromEpochDays(expiryDate),
+        purchaseDate = LocalDate.fromEpochDays(purchaseDate),
+        openDate = openDate?.let { LocalDate.fromEpochDays(it) },
         storageLocation = try {
             StorageLocation.valueOf(storageLocation)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            StorageLocation.PANTRY // Fallback
+        } catch (_: IllegalArgumentException) {
+            // Safety net: If we renamed an enum value in code but DB still has old string,
+            // default to PANTRY instead of crashing the app.
+            StorageLocation.PANTRY
         },
         updatedAt = updatedAt,
         nutriScore = nutriScore,

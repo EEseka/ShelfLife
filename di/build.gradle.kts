@@ -53,6 +53,7 @@ kotlin {
             implementation(project(":feature:auth"))
             implementation(project(":feature:settings"))
             implementation(project(":feature:pantry"))
+            implementation(project(":feature:insights"))
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

@@ -1,5 +1,6 @@
 package com.eeseka.shelflife.pantry.domain
 
+import com.eeseka.shelflife.shared.domain.insight.InsightStatus
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
 import com.eeseka.shelflife.shared.domain.util.DataError
@@ -36,6 +37,11 @@ interface PantryRepository {
     suspend fun updatePantryItem(item: PantryItem): EmptyResult<DataError>
 
     suspend fun deletePantryItem(itemId: String): EmptyResult<DataError>
+
+    suspend fun movePantryItemToInsights(
+        item: PantryItem,
+        status: InsightStatus
+    ): EmptyResult<DataError>
 
     // --- SYNC ---
     suspend fun syncRemotePantry(): EmptyResult<DataError>

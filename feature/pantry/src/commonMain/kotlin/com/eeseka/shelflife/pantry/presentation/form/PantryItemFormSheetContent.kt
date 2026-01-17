@@ -133,10 +133,12 @@ fun PantryItemFormSheetContent(
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
-            IconButton(onClick = {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
-                onDismiss()
-            }) {
+            IconButton(
+                enabled = !isSaving,
+                onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                    onDismiss()
+                }) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = stringResource(Res.string.cancel)

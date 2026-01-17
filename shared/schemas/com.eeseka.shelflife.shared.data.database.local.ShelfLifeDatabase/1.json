@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9702c4899e981de0dcf25b48f662d1ad",
+    "identityHash": "9390ddea5d72378454597efd68abe5b7",
     "entities": [
       {
         "tableName": "pantry_items",
@@ -147,11 +147,91 @@
             "id"
           ]
         }
+      },
+      {
+        "tableName": "insight_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `imageUrl` TEXT, `quantity` REAL NOT NULL, `quantityUnit` TEXT NOT NULL, `status` TEXT NOT NULL, `actionDate` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, `nutriScore` TEXT, `novaGroup` INTEGER, `ecoScore` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantityUnit",
+            "columnName": "quantityUnit",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "actionDate",
+            "columnName": "actionDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nutriScore",
+            "columnName": "nutriScore",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "novaGroup",
+            "columnName": "novaGroup",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "ecoScore",
+            "columnName": "ecoScore",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9702c4899e981de0dcf25b48f662d1ad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9390ddea5d72378454597efd68abe5b7')"
     ]
   }
 }

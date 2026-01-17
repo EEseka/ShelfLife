@@ -113,6 +113,7 @@ fun PantryListDetailScreen(
                         PantryDetailScreen(
                             item = state.selectedItem,
                             isDeleteLoading = state.isDeletingItem,
+                            isMoveLoading = state.isMovingToInsight,
                             events = detailEvents,
                             onAction = onAction,
                             showBackButton = isListHidden

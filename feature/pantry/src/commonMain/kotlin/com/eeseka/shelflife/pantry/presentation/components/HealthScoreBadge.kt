@@ -16,7 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import shelflife.feature.pantry.generated.resources.Res
+import shelflife.feature.pantry.generated.resources.nova
 
 @Composable
 fun HealthScoreBadge(
@@ -29,7 +32,7 @@ fun HealthScoreBadge(
 
     val (backgroundColor, textColor) = when {
         // --- NOVA GROUPS (Numbers) ---
-        type.equals("NOVA", ignoreCase = true) -> when (value) { // Maybe use the string resource here instead of "NOVA"
+        type.equals(stringResource(Res.string.nova), ignoreCase = true) -> when (value) {
             "1" -> Color(0xFF038141) to Color.White
             "2" -> Color(0xFFFECB02) to Color.Black
             "3" -> Color(0xFFEE8100) to Color.White

@@ -34,6 +34,7 @@ import shelflife.feature.pantry.generated.resources.wasted
 
 @Composable
 fun DetailActionFooter(
+    isLoading: Boolean,
     onConsumed: () -> Unit,
     onWasted: () -> Unit
 ) {
@@ -52,6 +53,7 @@ fun DetailActionFooter(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
+                    enabled = !isLoading,
                     onClick = {
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
                         onWasted()
@@ -69,6 +71,7 @@ fun DetailActionFooter(
                 }
 
                 Button(
+                    enabled = !isLoading,
                     onClick = {
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                         onConsumed()
@@ -92,6 +95,7 @@ fun DetailActionFooter(
 fun DetailActionFooterPreview() {
     ShelfLifeTheme {
         DetailActionFooter(
+            isLoading = false,
             onConsumed = {},
             onWasted = {}
         )

@@ -24,6 +24,7 @@ interface RemotePantryStorageService {
 
     suspend fun deletePantryItem(
         userId: String,
-        pantryItemId: String
+        pantryItemId: String,
+        deleteImage: Boolean = true
     ): EmptyResult<DataError.RemoteStorage>
 }

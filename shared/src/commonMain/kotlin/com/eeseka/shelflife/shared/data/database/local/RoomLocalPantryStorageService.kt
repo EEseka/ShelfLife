@@ -19,10 +19,10 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class RoomLocalPantryStorageService(
-    pantryItemDatabase: ShelfLifeDatabase,
-    private val logger: ShelfLifeLogger,
+    shelfLifeDatabase: ShelfLifeDatabase,
+    private val logger: ShelfLifeLogger
 ) : LocalPantryStorageService {
-    private val pantryItemDao = pantryItemDatabase.pantryItemDao
+    private val pantryItemDao = shelfLifeDatabase.pantryItemDao
 
     @OptIn(ExperimentalTime::class)
     override suspend fun upsertPantryItem(
@@ -64,7 +64,10 @@ class RoomLocalPantryStorageService(
         }
     }
 
-    override suspend fun searchPantryItemByBarcodeAndLocation(barcode: String, location: StorageLocation): Result<PantryItem?, DataError.LocalStorage> {
+    override suspend fun searchPantryItemByBarcodeAndLocation(
+        barcode: String,
+        location: StorageLocation
+    ): Result<PantryItem?, DataError.LocalStorage> {
         return safeRoomCall(logger) {
             pantryItemDao.getPantryItemByBarcodeAndLocation(barcode, location.name)?.toDomain()
         }

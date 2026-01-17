@@ -28,6 +28,7 @@ dependencyResolutionManagement {
     }
 }
 include(":feature:auth")
+include(":feature:insights")
 include(":feature:main")
 
 include(":feature:pantry")

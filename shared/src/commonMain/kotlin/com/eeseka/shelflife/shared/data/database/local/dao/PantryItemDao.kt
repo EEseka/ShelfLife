@@ -17,9 +17,6 @@ interface PantryItemDao {
     @Upsert
     suspend fun upsertPantryItem(item: PantryItemEntity)
 
-    @Upsert
-    suspend fun upsertPantryItems(items: List<PantryItemEntity>)
-
     @Query("SELECT * FROM pantry_items WHERE id = :id")
     suspend fun getPantryItemById(id: String): PantryItemEntity?
 
@@ -27,7 +24,10 @@ interface PantryItemDao {
     suspend fun getPantryItemByBarcode(barcode: String): PantryItemEntity?
 
     @Query("SELECT * FROM pantry_items WHERE barcode = :barcode AND storageLocation = :location LIMIT 1")
-    suspend fun getPantryItemByBarcodeAndLocation(barcode: String, location: String): PantryItemEntity?
+    suspend fun getPantryItemByBarcodeAndLocation(
+        barcode: String,
+        location: String
+    ): PantryItemEntity?
 
     @Query("DELETE FROM pantry_items WHERE id = :id")
     suspend fun deletePantryItemById(id: String)
@@ -73,6 +73,9 @@ interface PantryItemDao {
     fun getItemsExpiringBetween(startMillis: Long, endMillis: Long): Flow<List<PantryItemEntity>>
 
     // Helpers
+    @Upsert
+    suspend fun upsertPantryItems(items: List<PantryItemEntity>)
+
     @Query("SELECT id FROM pantry_items WHERE isSynced = 1")
     suspend fun getSyncedPantryItemIds(): List<String>
 
@@ -104,8 +107,8 @@ interface PantryItemDao {
             // 2. OR Server is newer than Local -> SAVE IT
             // 3. OR Local is already "Synced" (meaning it matches the old server state) -> SAVE IT
             val shouldOverwrite = localItemEntity == null ||
-                serverItem.updatedAt > localItemEntity.updatedAt ||
-                localItemEntity.isSynced
+                    serverItem.updatedAt > localItemEntity.updatedAt ||
+                    localItemEntity.isSynced
 
             if (shouldOverwrite) {
                 // We are saving server data, so it is "Synced" by definition

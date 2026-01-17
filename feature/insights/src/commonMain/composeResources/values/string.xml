@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="all_time">All Time</string>
+    <string name="this_month">This Month</string>
+    <string name="last_30_days">Last 30 Days</string>
+    <string name="history_cleared">History deleted. Fresh start! ✨</string>
+    <string name="clear_history">Clear History</string>
+    <string name="delete_all_insights_confirm">Are you sure you want to delete all history?</string>
+    <string name="deleting">Deleting...</string>
+    <string name="clear_all">Clear All</string>
+    <string name="cancel">Cancel</string>
+    <string name="insights">Insights</string>
+    <string name="more_options">More Options</string>
+    <string name="history">History</string>
+    <string name="saved">Saved</string>
+    <string name="consumed">Consumed</string>
+    <string name="wasted">Wasted</string>
+    <string name="empty_insights_title">No history yet</string>
+    <string name="empty_insights_description">Mark items as consumed or wasted to see your stats grow! 📈</string>
+    <string name="health_info">Health Information</string>
+    <string name="diet_quantity">Diet Quality (Consumed Items)</string>
+    <string name="a_healthy">A (Healthy)</string>
+    <string name="e_limit">E (Limit)</string>
+    <string name="ultra_processed_items_eaten">Ultra-Processed items eaten</string>
+    <string name="eco_friendly_items_wasted">Eco-Friendly items wasted</string>
+</resources>

@@ -1,7 +1,10 @@
 package com.eeseka.shelflife.shared.domain.insight
 
 import kotlinx.datetime.LocalDate
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 data class InsightItem(
     // --- Identity ---
     val id: String,
@@ -13,6 +16,9 @@ data class InsightItem(
     // --- The Analytics ---
     val status: InsightStatus,
     val actionDate: LocalDate,
+
+    // --- SYNC METADATA ---
+    val updatedAt: Long = Clock.System.now().toEpochMilliseconds(),
 
     // --- Health Analytics (From PantryItem) ---
     val nutriScore: String?,   // Did I eat healthy stuff or waste healthy stuff?

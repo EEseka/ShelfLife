@@ -1,5 +1,7 @@
 package com.eeseka.shelflife.shared.data.database.remote
 
+import com.eeseka.shelflife.shared.data.database.util.FirebaseFirestoreConflictException
+import com.eeseka.shelflife.shared.data.database.util.FirebaseFirestoreNotFoundException
 import com.eeseka.shelflife.shared.data.database.util.createStorageFile
 import com.eeseka.shelflife.shared.data.dto.PantryItemSerializable
 import com.eeseka.shelflife.shared.data.mappers.toDomain
@@ -16,10 +18,6 @@ import dev.gitlive.firebase.storage.storage
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-// Custom exceptions for cleaner error handling
-private class FirebaseFirestoreConflictException(message: String) : Exception(message)
-private class FirebaseFirestoreNotFoundException(message: String) : Exception(message)
-
 /**
  * Smart Firebase Firestore + Storage implementation of RemoteStorageService.
  * 
@@ -31,7 +29,7 @@ private class FirebaseFirestoreNotFoundException(message: String) : Exception(me
  * 
  * ViewModels don't need to worry about Storage vs Firestore - just pass the PantryItem!
  */
-class FirebaseFirestoreRemoteStorageService(
+class FirebaseFirestoreRemotePantryStorageService(
     private val shelfLifeLogger: ShelfLifeLogger
 ) : RemotePantryStorageService {
     companion object {
@@ -122,7 +120,8 @@ class FirebaseFirestoreRemoteStorageService(
 
     override suspend fun deletePantryItem(
         userId: String,
-        pantryItemId: String
+        pantryItemId: String,
+        deleteImage: Boolean
     ): EmptyResult<DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
@@ -134,11 +133,13 @@ class FirebaseFirestoreRemoteStorageService(
                 throw FirebaseFirestoreNotFoundException("Pantry item not found")
             }
 
-            val item = existingDoc.data<PantryItemSerializable>().toDomain()
+            if (deleteImage) {
+                val item = existingDoc.data<PantryItemSerializable>().toDomain()
 
-            // SMART: Delete images from Storage before deleting document
-            deleteImageFromStorage(item.imageUrl)
-            deleteImageFromStorage(item.thumbnailUrl)
+                // SMART: Delete images from Storage before deleting document
+                deleteImageFromStorage(item.imageUrl)
+                deleteImageFromStorage(item.thumbnailUrl)
+            }
 
             document.delete()
         }

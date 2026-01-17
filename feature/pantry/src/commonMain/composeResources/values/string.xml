@@ -101,4 +101,7 @@
     <string name="error_quantity_zero">Quantity must be greater than 0</string>
     <string name="error_unit_required">Quantity unit is required</string>
     <string name="error_expiry_required">Expiry date is required</string>
+
+    <string name="item_consumed_message">Mission accomplished. Tasty work. 🫡</string>
+    <string name="item_wasted_message">The bin won this round. 🗑️</string>
 </resources>

@@ -2,6 +2,9 @@ package com.eeseka.shelflife.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.eeseka.shelflife.auth.presentation.AuthViewModel
+import com.eeseka.shelflife.insights.data.OfflineFirstInsightRepository
+import com.eeseka.shelflife.insights.domain.InsightRepository
+import com.eeseka.shelflife.insights.presentation.InsightViewModel
 import com.eeseka.shelflife.onboarding.presentation.OnboardingViewModel
 import com.eeseka.shelflife.pantry.data.OfflineFirstPantryRepository
 import com.eeseka.shelflife.pantry.domain.PantryRepository
@@ -10,8 +13,10 @@ import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryViewMod
 import com.eeseka.shelflife.settings.presentation.SettingsViewModel
 import com.eeseka.shelflife.shared.data.auth.FirebaseAuthService
 import com.eeseka.shelflife.shared.data.database.local.DatabaseFactory
+import com.eeseka.shelflife.shared.data.database.local.RoomLocalInsightStorageService
 import com.eeseka.shelflife.shared.data.database.local.RoomLocalPantryStorageService
-import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteStorageService
+import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteInsightStorageService
+import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemotePantryStorageService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
 import com.eeseka.shelflife.shared.data.media.NativeImageCompressionService
 import com.eeseka.shelflife.shared.data.networking.HttpClientFactory
@@ -19,7 +24,9 @@ import com.eeseka.shelflife.shared.data.networking.KtorApiService
 import com.eeseka.shelflife.shared.data.notification.NativeNotificationService
 import com.eeseka.shelflife.shared.data.settings.DataStoreSettingsService
 import com.eeseka.shelflife.shared.domain.auth.AuthService
+import com.eeseka.shelflife.shared.domain.database.local.LocalInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.database.remote.RemoteInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.media.ImageCompressionService
@@ -44,8 +51,10 @@ val sharedModule = module {
     }
     singleOf(::DataStoreSettingsService) bind SettingsService::class
     singleOf(::FirebaseAuthService) bind AuthService::class
-    singleOf(::FirebaseFirestoreRemoteStorageService) bind RemotePantryStorageService::class
+    singleOf(::FirebaseFirestoreRemotePantryStorageService) bind RemotePantryStorageService::class
+    singleOf(::FirebaseFirestoreRemoteInsightStorageService) bind RemoteInsightStorageService::class
     singleOf(::RoomLocalPantryStorageService) bind LocalPantryStorageService::class
+    singleOf(::RoomLocalInsightStorageService) bind LocalInsightStorageService::class
     singleOf(::NativeNotificationService) bind NotificationService::class
     singleOf(::NativeImageCompressionService) bind ImageCompressionService::class
     singleOf(::KtorApiService) bind ApiService::class
@@ -73,6 +82,10 @@ val sharedModule = module {
     singleOf(::OfflineFirstPantryRepository) bind PantryRepository::class
     viewModelOf(::PantryViewModel)
     viewModelOf(::PantryFormViewModel)
+
+    // Feature: Insights module
+    singleOf(::OfflineFirstInsightRepository) bind InsightRepository::class
+    viewModelOf(::InsightViewModel)
 }
 
 expect val platformModule: Module
