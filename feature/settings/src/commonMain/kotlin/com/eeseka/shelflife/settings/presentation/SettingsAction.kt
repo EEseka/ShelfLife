@@ -14,4 +14,5 @@ sealed interface SettingsAction {
     data class OnSetNotificationTime(val time: LocalTime) : SettingsAction
     data object OnSignOutClicked : SettingsAction
     data object OnDeleteAccountClicked : SettingsAction
+    data object ExportPantryData : SettingsAction
 }

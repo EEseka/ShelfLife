@@ -17,6 +17,7 @@ import com.eeseka.shelflife.shared.data.database.local.RoomLocalInsightStorageSe
 import com.eeseka.shelflife.shared.data.database.local.RoomLocalPantryStorageService
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteInsightStorageService
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemotePantryStorageService
+import com.eeseka.shelflife.shared.data.export.NativeFileExportService
 import com.eeseka.shelflife.shared.data.logging.KermitLogger
 import com.eeseka.shelflife.shared.data.media.NativeImageCompressionService
 import com.eeseka.shelflife.shared.data.networking.HttpClientFactory
@@ -28,6 +29,7 @@ import com.eeseka.shelflife.shared.domain.database.local.LocalInsightStorageServ
 import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
 import com.eeseka.shelflife.shared.domain.database.remote.RemoteInsightStorageService
 import com.eeseka.shelflife.shared.domain.database.remote.RemotePantryStorageService
+import com.eeseka.shelflife.shared.domain.export.FileExportService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.media.ImageCompressionService
 import com.eeseka.shelflife.shared.domain.networking.ApiService
@@ -57,6 +59,7 @@ val sharedModule = module {
     singleOf(::RoomLocalInsightStorageService) bind LocalInsightStorageService::class
     singleOf(::NativeNotificationService) bind NotificationService::class
     singleOf(::NativeImageCompressionService) bind ImageCompressionService::class
+    singleOf(::NativeFileExportService) bind FileExportService::class
     singleOf(::KtorApiService) bind ApiService::class
     single {
         get<DatabaseFactory>()

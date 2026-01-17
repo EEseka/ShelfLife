@@ -3,6 +3,7 @@ package com.eeseka.shelflife.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.eeseka.shelflife.shared.data.database.local.DatabaseFactory
+import com.eeseka.shelflife.shared.data.export.FileExporter
 import com.eeseka.shelflife.shared.data.media.ImageCompressor
 import com.eeseka.shelflife.shared.data.notification.NotificationScheduler
 import com.eeseka.shelflife.shared.data.settings.createDataStore
@@ -20,4 +21,5 @@ actual val platformModule = module {
     singleOf(::ConnectivityObserver)
     singleOf(::NotificationScheduler)
     singleOf(::ImageCompressor)
+    singleOf(::FileExporter)
 }

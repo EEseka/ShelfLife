@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.eeseka.shelflife.shared.data.util.ConnectivityObserver
 import com.eeseka.shelflife.shared.domain.auth.AuthService
 import com.eeseka.shelflife.shared.domain.auth.User
+import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.export.CsvGenerator
+import com.eeseka.shelflife.shared.domain.export.FileExportService
 import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.notification.NotificationService
 import com.eeseka.shelflife.shared.domain.settings.AppTheme
@@ -18,6 +21,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,16 +30,22 @@ import kotlinx.datetime.LocalTime
 import shelflife.feature.settings.generated.resources.Res
 import shelflife.feature.settings.generated.resources.account_disabled
 import shelflife.feature.settings.generated.resources.auth_success
+import shelflife.feature.settings.generated.resources.export_failed
 import shelflife.feature.settings.generated.resources.internet_connection_unavailable
+import shelflife.feature.settings.generated.resources.no_items_to_export
 import shelflife.feature.settings.generated.resources.sign_in_canceled
 import shelflife.feature.settings.generated.resources.unknown_error_occurred
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 class SettingsViewModel(
     private val settingsService: SettingsService,
     private val authService: AuthService,
     private val connectivityObserver: ConnectivityObserver,
     private val shelfLifeLogger: ShelfLifeLogger,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val fileExportService: FileExportService,
+    private val localPantryStorageService: LocalPantryStorageService
 ) : ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state = combine(
@@ -72,6 +82,7 @@ class SettingsViewModel(
             SettingsAction.OnSignOutClicked -> signOut()
             SettingsAction.OnToggleNotification -> toggleNotifications()
             is SettingsAction.OnNotificationPermissionResult -> handlePermissionResult(action.state)
+            SettingsAction.ExportPantryData -> exportPantryData()
         }
     }
 
@@ -215,4 +226,26 @@ class SettingsViewModel(
                 }
         }
     } // TODO: Don't forget to clean up in firebase console
+
+    @OptIn(ExperimentalTime::class)
+    private fun exportPantryData() {
+        viewModelScope.launch {
+            val items = localPantryStorageService.getAllPantryItems().first()
+
+            if (items.isEmpty()) {
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.no_items_to_export)))
+                return@launch
+            }
+
+            val csvContent = CsvGenerator.generatePantryCsv(items)
+            val fileName = "shelfLife_inventory_${Clock.System.now().toEpochMilliseconds()}.csv"
+
+            val isExportComplete = fileExportService.exportFile(fileName, csvContent)
+
+            if (!isExportComplete) {
+                shelfLifeLogger.error("Export failed in Service")
+                _eventChannel.send(SettingsEvent.Error(UiText.Resource(Res.string.export_failed)))
+            }
+        }
+    }
 }

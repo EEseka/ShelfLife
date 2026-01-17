@@ -1,4 +1,5 @@
 <resources>
     <string name="notification_channel_name">Expiry Alerts</string>
     <string name="notification_channel_description">Daily reminders for expiring food</string>
+    <string name="export_pantry_data_chooser_title">Export Pantry Data</string>
 </resources>

@@ -44,4 +44,6 @@
     <string name="export_data">Export Data</string>
     <string name="time_am">AM</string>
     <string name="time_pm">PM</string>
+    <string name="no_items_to_export">No items to export</string>
+    <string name="export_failed">Export failed"</string>
 </resources>

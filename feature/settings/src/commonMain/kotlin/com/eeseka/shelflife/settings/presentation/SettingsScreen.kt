@@ -56,7 +56,6 @@ import com.eeseka.shelflife.shared.presentation.util.ShelfLifeSnackbarVisuals
 import com.eeseka.shelflife.shared.presentation.util.SnackbarType
 import com.eeseka.shelflife.shared.presentation.util.currentDeviceConfiguration
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 import org.jetbrains.compose.resources.stringResource
 import shelflife.feature.settings.generated.resources.Res
@@ -88,7 +87,6 @@ fun SettingsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val permissionController = rememberPermissionController()
     val config = currentDeviceConfiguration()
-    val scope = rememberCoroutineScope()
     val hapticFeedback = LocalHapticFeedback.current
 
     var isSignInWithGoogleLoading by remember { mutableStateOf(false) }
@@ -171,11 +169,8 @@ fun SettingsScreen(
             SettingsSection(title = stringResource(Res.string.data)) {
                 ExportDataItem(
                     onExportClick = {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(
-                                ShelfLifeSnackbarVisuals("Coming soon...", SnackbarType.Info)
-                            )
-                        }
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onAction(SettingsAction.ExportPantryData)
                     }
                 )
                 SettingsDivider()
