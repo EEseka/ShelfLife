@@ -1,8 +1,12 @@
 package com.eeseka.shelflife.shared.data.notification
 
+import com.eeseka.shelflife.shared.domain.notification.NotificationLogic
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.getString
 import platform.Foundation.NSDateComponents
 import platform.UserNotifications.UNCalendarNotificationTrigger
@@ -11,91 +15,99 @@ import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNUserNotificationCenter
 import shelflife.shared.generated.resources.Res
-import shelflife.shared.generated.resources.notification_many_items
-import shelflife.shared.generated.resources.notification_single_item
+import shelflife.shared.generated.resources.item_group_many
+import shelflife.shared.generated.resources.item_group_three
+import shelflife.shared.generated.resources.item_group_two
 import shelflife.shared.generated.resources.notification_title
-import shelflife.shared.generated.resources.notification_two_items
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 actual class NotificationScheduler {
 
+    @OptIn(ExperimentalTime::class)
     actual suspend fun scheduleDaily(time: LocalTime, items: List<PantryItem>) {
         cancelDaily()
 
-        // Group items by Expiry Date
-        val grouped = items.groupBy { it.expiryDate }
+        val center = UNUserNotificationCenter.currentNotificationCenter()
 
-        // Iterate and Schedule
-        grouped.forEach { (expiryDate, itemsForDay) ->
+        // Use explicitly imported Clock to avoid ambiguity
+        val nowInstant = Clock.System.now()
+        val now = nowInstant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-            val title = getString(Res.string.notification_title)
-            val body = when (itemsForDay.size) {
-                1 -> getString(Res.string.notification_single_item, itemsForDay[0].name)
+        val allEvents = items.flatMap { item ->
+            NotificationLogic.NotificationType.entries.map { type ->
+                val triggerDate = NotificationLogic.getTriggerDate(item, type)
+                Triple(item, type, triggerDate)
+            }
+        }
+
+        val validEvents = allEvents.filter { (_, _, date) ->
+            val triggerDateTime = LocalDateTime(date, time)
+            triggerDateTime > now
+        }
+
+        val sortedEvents = validEvents
+            .sortedBy { it.third }
+            .take(64)
+
+        val groupedEvents = sortedEvents.groupBy { it.third to it.second }
+
+        groupedEvents.forEach { (key, eventList) ->
+            val (fireDate, type) = key
+            val itemsInGroup = eventList.map { it.first }
+
+            val itemString = when (itemsInGroup.size) {
+                1 -> itemsInGroup[0].name
                 2 -> getString(
-                    Res.string.notification_two_items,
-                    itemsForDay[0].name,
-                    itemsForDay[1].name
+                    Res.string.item_group_two,
+                    itemsInGroup[0].name,
+                    itemsInGroup[1].name
+                )
+
+                3 -> getString(
+                    Res.string.item_group_three,
+                    itemsInGroup[0].name,
+                    itemsInGroup[1].name,
+                    itemsInGroup[2].name
                 )
 
                 else -> getString(
-                    Res.string.notification_many_items,
-                    itemsForDay[0].name,
-                    itemsForDay[1].name,
-                    itemsForDay.size - 2
+                    Res.string.item_group_many,
+                    itemsInGroup[0].name,
+                    itemsInGroup[1].name,
+                    itemsInGroup.size - 2
                 )
             }
 
-            // Pass ID for Deep Linking (We use the ID of the first item as a reference)
-            val deepLinkItemId = itemsForDay.first().id.hashCode()
+            val title = getString(Res.string.notification_title)
+            val body = getString(type.resource, itemString)
 
-            val dateComponents = NSDateComponents().apply {
-                this.year = expiryDate.year.toLong()
-                this.month = expiryDate.month.number.toLong()
-                this.day = expiryDate.day.toLong()
+            val components = NSDateComponents().apply {
+                this.year = fireDate.year.toLong()
+                this.month = fireDate.month.number.toLong()
+                this.day = fireDate.day.toLong()
                 this.hour = time.hour.toLong()
                 this.minute = time.minute.toLong()
                 this.second = 0
             }
 
-            scheduleSingle(
-                title,
-                body,
-                dateComponents,
-                expiryDate.toString(),
-                deepLinkItemId
+            val content = UNMutableNotificationContent().apply {
+                setTitle(title)
+                setBody(body)
+                setSound(UNNotificationSound.soundNamed("custom_notification_sound.wav"))
+                setUserInfo(mapOf("itemId" to itemsInGroup.first().id))
+            }
+
+            val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(
+                dateComponents = components,
+                repeats = false
             )
-        }
-    }
 
-    private fun scheduleSingle(
-        title: String,
-        body: String,
-        dateComponents: NSDateComponents,
-        idString: String,
-        deepLinkId: Int
-    ) {
-        val center = UNUserNotificationCenter.currentNotificationCenter()
-        val content = UNMutableNotificationContent()
-        content.setTitle(title)
-        content.setBody(body)
-        content.setSound(UNNotificationSound.soundNamed("custom_notification_sound.wav"))
+            val requestId = "${fireDate}_${type.name}"
+            val request = UNNotificationRequest.requestWithIdentifier(requestId, content, trigger)
 
-        // Pass ID so tapping opens the app (potentially to details)
-        content.setUserInfo(mapOf("itemId" to deepLinkId))
-
-        val trigger = UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(
-            dateComponents = dateComponents,
-            repeats = false
-        )
-
-        val request = UNNotificationRequest.requestWithIdentifier(
-            identifier = "expiry_$idString",
-            content = content,
-            trigger = trigger
-        )
-
-        center.addNotificationRequest(request) { error ->
-            if (error != null) {
-                println("ShelfLife iOS Error: ${error.localizedDescription}")
+            center.addNotificationRequest(request) { error ->
+                if (error != null) println("ShelfLife iOS Error: ${error.localizedDescription}")
             }
         }
     }

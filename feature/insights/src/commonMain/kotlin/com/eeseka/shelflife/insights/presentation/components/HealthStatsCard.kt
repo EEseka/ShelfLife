@@ -133,6 +133,10 @@ fun HealthStatsCard(
                                                 .fillMaxHeight()
                                                 .background(nutriColors[score] ?: Color.Gray)
                                         )
+                                        Spacer(
+                                            Modifier.width(1.dp)
+                                                .background(MaterialTheme.colorScheme.surface)
+                                        )
                                     }
                                 }
                             }

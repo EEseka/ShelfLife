@@ -237,7 +237,7 @@ class OfflineFirstPantryRepository(
 
     // --- HELPERS ---
     private fun refreshNotifications() {
-        CoroutineScope(Dispatchers.IO).launch {
+        repositoryScope.launch {
             notificationService.refreshNotifications()
         }
     }

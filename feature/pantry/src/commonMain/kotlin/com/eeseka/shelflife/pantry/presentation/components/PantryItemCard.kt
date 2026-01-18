@@ -139,6 +139,8 @@ fun PantryItemCard(
                         text = "${item.quantity.clean()} ${item.quantityUnit}",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 }

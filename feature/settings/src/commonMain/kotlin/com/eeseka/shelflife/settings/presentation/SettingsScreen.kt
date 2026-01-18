@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -169,7 +168,7 @@ fun SettingsScreen(
             SettingsSection(title = stringResource(Res.string.data)) {
                 ExportDataItem(
                     onExportClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.VirtualKey)
                         onAction(SettingsAction.ExportPantryData)
                     }
                 )
@@ -188,8 +187,14 @@ fun SettingsScreen(
             isGuest = state.user !is User.Authenticated,
             isSigningOut = state.isSigningOut,
             isDeleting = state.isDeletingAccount,
-            onSignOut = { showLogoutConfirmation = true },
-            onDelete = { showDeleteAccountConfirmation = true }
+            onSignOut = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                showLogoutConfirmation = true
+            },
+            onDelete = {
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                showDeleteAccountConfirmation = true
+            }
         )
     }
 
@@ -352,7 +357,7 @@ fun SettingsScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                             onAction(SettingsAction.OnDeleteAccountClicked)
                             showDeleteAccountConfirmation = false
                         },

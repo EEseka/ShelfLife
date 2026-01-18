@@ -74,6 +74,7 @@ fun AuthActions(
                 isLoading = isGoogleSigningIn,
                 enabled = enableButtons,
                 onClick = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                     onGoogleClick()
                     this@GoogleButtonUiContainerFirebase.onClick()
                 }

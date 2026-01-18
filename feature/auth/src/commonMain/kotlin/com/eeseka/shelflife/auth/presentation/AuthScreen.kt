@@ -1,6 +1,7 @@
 package com.eeseka.shelflife.auth.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.auth.presentation.components.AuthActions
 import com.eeseka.shelflife.auth.presentation.components.AuthBranding
@@ -35,7 +40,9 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 import shelflife.feature.auth.generated.resources.Res
+import shelflife.feature.auth.generated.resources.auth_disclosure
 
 private const val ANIMATION_GROCERY_BAG = "grocery_delivery.json"
 
@@ -48,6 +55,9 @@ fun AuthScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var isGoogleSigningIn by remember { mutableStateOf(false) }
     var isGuestSigningIn by remember { mutableStateOf(false) }
+
+    val uriHandler = LocalUriHandler.current
+    val privacyUrl = "https://www.google.com"
 
     val config = currentDeviceConfiguration()
 
@@ -70,7 +80,8 @@ fun AuthScreen(
                 val message = event.message.asStringAsync()
                 val visuals = ShelfLifeSnackbarVisuals(
                     message = message,
-                    type = SnackbarType.Error
+                    type = SnackbarType.Error,
+                    withDismissAction = true
                 )
                 snackbarHostState.showSnackbar(visuals)
             }
@@ -79,7 +90,8 @@ fun AuthScreen(
                 val message = event.message.asStringAsync()
                 val visuals = ShelfLifeSnackbarVisuals(
                     message = message,
-                    type = SnackbarType.Success
+                    type = SnackbarType.Success,
+                    withDismissAction = true
                 )
                 snackbarHostState.showSnackbar(visuals)
             }
@@ -132,7 +144,19 @@ fun AuthScreen(
                             }
                         )
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = stringResource(Res.string.auth_disclosure),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.padding(bottom = 24.dp)
+                                .clickable {
+                                    uriHandler.openUri(privacyUrl)
+                                }
+                        )
                     }
                 }
 
@@ -189,6 +213,19 @@ fun AuthScreen(
                                     onGuestClick = {
                                         isGuestSigningIn = true
                                         onAction(AuthAction.OnGuestClick)
+                                    }
+                                )
+
+                                Spacer(modifier = Modifier.height(24.dp))
+
+                                Text(
+                                    text = stringResource(Res.string.auth_disclosure),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center,
+                                    textDecoration = TextDecoration.Underline,
+                                    modifier = Modifier.clickable {
+                                        uriHandler.openUri(privacyUrl)
                                     }
                                 )
                             }

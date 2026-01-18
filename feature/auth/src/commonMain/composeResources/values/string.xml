@@ -12,4 +12,5 @@
     <string name="account_disabled">Your account has been disabled. Please contact support for assistance.</string>
     <string name="unknown_error_occurred">Unknown error occurred.</string>
     <string name="auth_success">Authentication successful!</string>
+    <string name="auth_disclosure">By continuing, you agree to our Terms &amp; Privacy Policy.</string>
 </resources>

@@ -41,9 +41,21 @@
     <string name="error_unknown_local">A local database error occurred.</string>
 
     <!-- Notification strings -->
-    <string name="notification_title">ShelfLife Alert 🍎</string>
+    <string name="notification_title">ShelfLife Reminder</string>
 
-    <string name="notification_single_item">%1$s is expiring today!</string>
-    <string name="notification_two_items">%1$s and %2$s are expiring today!</string>
-    <string name="notification_many_items">%1$s, %2$s, and %3$d others are expiring today!</string>
+    <string name="notif_month_before">Heads up! %1$s expires in a month. Time to plan? 🗓️</string>
+    <string name="notif_week_before">7-Day Notice: %1$s expires in a week. Don\'t forget! 🧐</string>
+    <string name="notif_3_days_before">Use it soon! %1$s expires in 3 days. 👨‍🍳</string>
+    <string name="notif_tomorrow">One day left! %1$s expires tomorrow. Cook it tonight? 🍳</string>
+
+    <string name="notif_today">Expires Today: %1$s. Use it or store it properly! ⚠️</string>
+
+    <string name="notif_1_day_after">Update your list: Did you finish the %1$s yesterday? 📝</string>
+    <string name="notif_3_days_after">Sanity Check: %1$s expired 3 days ago. Still good? 🗑️</string>
+    <string name="notif_week_after">Hygiene Alert: %1$s is a week past expiry. Check your storage! 🤢</string>
+    <string name="notif_month_after">That %1$s expired last month. Please tell me it\'s gone... ☣️</string>
+
+    <string name="item_group_two">%1$s &amp; %2$s</string>
+    <string name="item_group_three">%1$s, %2$s &amp; %3$s</string>
+    <string name="item_group_many">%1$s, %2$s &amp; %3$d others</string>
 </resources>
