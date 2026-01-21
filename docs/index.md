@@ -1,8 +1,8 @@
-# Welcome to Shelf Life 🍎
+# Welcome to ShelfLife 🍎
 
 **Your Smart Pantry Assistant.**
 
-Shelf Life helps you track your groceries, reduce food waste, and save money. It allows you to scan items, track expiration dates, and get insights into your consumption habits.
+ShelfLife helps you track your groceries, reduce food waste, and save money. It allows you to scan items, track expiration dates, and get insights into your consumption habits.
 
 ### 🚀 Key Features
 * **Track Expiry Dates:** Never let food rot again.

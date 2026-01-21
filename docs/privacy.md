@@ -1,8 +1,8 @@
-# Privacy Policy for Shelf Life
+# Privacy Policy for ShelfLife
 
 **Last Updated:** January 18, 2026
 
-**Shelf Life** is operated by **Eseka Emmanuel** ("we," "us," or "our"). This Privacy Policy applies solely to the Shelf Life mobile application.
+**ShelfLife** is operated by **Eseka Emmanuel** ("we," "us," or "our"). This Privacy Policy applies solely to the ShelfLife mobile application.
 
 We built this app to help you track your groceries and reduce food waste, not to track you. This policy explains clearly how your data is handled. We believe in transparency and keeping your data necessary, minimal, and secure.
 
