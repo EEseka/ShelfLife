@@ -41,7 +41,7 @@ class FirebaseFirestoreRemoteInsightStorageService(
     override suspend fun createInsightItem(
         userId: String,
         insightItem: InsightItem
-    ): EmptyResult<DataError.RemoteStorage> {
+    ): Result<InsightItem, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val insightCollection =
                 Firebase.firestore.collection(BASE_COLLECTION_PATH).document(userId)
@@ -57,6 +57,7 @@ class FirebaseFirestoreRemoteInsightStorageService(
             val processedItem = uploadImagesIfNeeded(userId, insightItem)
 
             insightCollection.document(processedItem.id).set(processedItem.toSerializable())
+            processedItem
         }
     }
 
@@ -93,7 +94,7 @@ class FirebaseFirestoreRemoteInsightStorageService(
     override suspend fun updateInsightItem(
         userId: String,
         insightItem: InsightItem
-    ): EmptyResult<DataError.RemoteStorage> {
+    ): Result<InsightItem, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
                 .collection(BASE_COLLECTION_PATH).document(userId)
@@ -113,6 +114,7 @@ class FirebaseFirestoreRemoteInsightStorageService(
             deleteOldImagesIfReplaced(oldItem, processedItem)
 
             document.set(processedItem.toSerializable())
+            processedItem
         }
     }
 

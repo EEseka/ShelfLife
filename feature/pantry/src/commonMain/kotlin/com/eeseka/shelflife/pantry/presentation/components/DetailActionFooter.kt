@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -45,45 +46,58 @@ fun DetailActionFooter(
         shadowElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedButton(
-                    enabled = !isLoading,
-                    onClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
-                        onWasted()
-                    },
-                    modifier = Modifier.weight(1f).height(56.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
-                ) {
-                    Icon(Icons.Outlined.Delete, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(Res.string.wasted),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                    )
-                }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            }
 
-                Button(
-                    enabled = !isLoading,
-                    onClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
-                        onConsumed()
-                    },
-                    modifier = Modifier.weight(1f).height(56.dp)
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Icon(Icons.Default.CheckCircle, null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(Res.string.consumed),
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
-                    )
+                    OutlinedButton(
+                        enabled = !isLoading,
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                            onWasted()
+                        },
+                        modifier = Modifier.weight(1f).height(56.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                    ) {
+                        if (!isLoading) {
+                            Icon(Icons.Outlined.Delete, null)
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = stringResource(Res.string.wasted),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
+
+                    Button(
+                        enabled = !isLoading,
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onConsumed()
+                        },
+                        modifier = Modifier.weight(1f).height(56.dp)
+                    ) {
+                        if (!isLoading) {
+                            Icon(Icons.Default.CheckCircle, null)
+                            Spacer(Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = stringResource(Res.string.consumed),
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                    }
                 }
             }
         }
@@ -101,3 +115,16 @@ fun DetailActionFooterPreview() {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DetailActionFooterPreviewLoading() {
+    ShelfLifeTheme {
+        DetailActionFooter(
+            isLoading = true,
+            onConsumed = {},
+            onWasted = {}
+        )
+    }
+}
+

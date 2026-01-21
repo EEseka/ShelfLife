@@ -211,6 +211,7 @@ fun PantryDetailScreen(
                             packagingSize = item.packagingSize,
                             showSnackbar = {
                                 scope.launch {
+                                    snackbarHostState.currentSnackbarData?.dismiss()
                                     snackbarHostState.showSnackbar(
                                         ShelfLifeSnackbarVisuals(
                                             getString(resource = Res.string.barcode_copied),

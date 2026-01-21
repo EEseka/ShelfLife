@@ -84,10 +84,10 @@ class OfflineFirstInsightRepository(
                                     // Item exists on server - update it
                                     is Result.Success -> {
                                         remoteDataSource.updateInsightItem(userId, item)
-                                            .onSuccess {
+                                            .onSuccess { updatedRemoteItem ->
                                                 // Mark as synced locally
                                                 localDataSource.upsertInsightItem(
-                                                    item,
+                                                    updatedRemoteItem,
                                                     isSynced = true
                                                 )
                                                 logger.info("Successfully updated and synced item: ${item.id}")
@@ -102,10 +102,10 @@ class OfflineFirstInsightRepository(
                                     is Result.Failure -> {
                                         if (result.error == DataError.RemoteStorage.NOT_FOUND) {
                                             remoteDataSource.createInsightItem(userId, item)
-                                                .onSuccess {
+                                                .onSuccess { updatedRemoteItem ->
                                                     // Mark as synced locally
                                                     localDataSource.upsertInsightItem(
-                                                        item,
+                                                        updatedRemoteItem,
                                                         isSynced = true
                                                     )
                                                     logger.info("Successfully created and synced item: ${item.id}")

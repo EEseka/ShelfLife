@@ -4,7 +4,7 @@ agp = "8.13.0"
 android-compileSdk = "36"
 android-minSdk = "26"
 android-targetSdk = "36"
-buildkonfig = "0.17.1"       # [ADDED] For secure API keys
+buildkonfig = "0.17.1"
 
 # --- Kotlin & Core ---
 kotlin = "2.2.21"
@@ -24,17 +24,17 @@ koin = "4.1.1"
 ktor = "3.3.3"
 room = "2.8.4"
 sqlite = "2.6.2"
-datastore = "1.2.0"          # [ADDED] For Settings Screen
-navigation = "2.9.1" # [ADDED] For Screen Navigation
+datastore = "1.2.0"
+navigation = "2.9.1"
 
 # --- Utils ---
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 kotlinx-datetime = "0.7.1"
-kermit = "2.0.8"             # [ADDED] For Logging
+kermit = "2.0.8"
 adaptive = "1.2.0"
-moko = "0.20.1"              # [ADDED] For Permissions
-compottie = "2.0.2"          # [ADDED] For Lottie Animations
+moko = "0.20.1"
+compottie = "2.0.2"
 
 # --- UI & Hardware ---
 coil = "3.3.0"
@@ -47,6 +47,8 @@ auth = "2.3.1"
 # --- Firebase ---
 firebase = "2.4.0"
 google = "4.4.4"
+firebase-crashlytics-plugin = "3.0.6"
+firebase-appcheck = "19.0.0"
 
 [libraries]
 # --- Kotlin ---
@@ -104,7 +106,9 @@ firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebase"
 firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebase" }
 firebase-storage = { module = "dev.gitlive:firebase-storage", version.ref = "firebase" }
 firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "firebase" }
-
+firebase-crashlytics = { module = "dev.gitlive:firebase-crashlytics", version.ref = "firebase" }
+google-firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity", version.ref = "firebase-appcheck" }
+google-firebase-appcheck-debug = { module = "com.google.firebase:firebase-appcheck-debug", version.ref = "firebase-appcheck" }
 # DataStore (Settings)
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
@@ -138,6 +142,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 
 [bundles]
 koin-common = [

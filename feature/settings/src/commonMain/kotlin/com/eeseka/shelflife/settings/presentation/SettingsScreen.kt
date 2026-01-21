@@ -1,6 +1,7 @@
 package com.eeseka.shelflife.settings.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -29,17 +31,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.settings.presentation.components.AuthenticatedProfileCard
 import com.eeseka.shelflife.settings.presentation.components.ExportDataItem
 import com.eeseka.shelflife.settings.presentation.components.GuestModeCard
 import com.eeseka.shelflife.settings.presentation.components.NotificationItem
+import com.eeseka.shelflife.settings.presentation.components.PrivacyPolicyItem
 import com.eeseka.shelflife.settings.presentation.components.SettingsFooter
 import com.eeseka.shelflife.settings.presentation.components.SettingsSection
 import com.eeseka.shelflife.settings.presentation.components.SyncStatusItem
@@ -55,15 +65,20 @@ import com.eeseka.shelflife.shared.presentation.util.ShelfLifeSnackbarVisuals
 import com.eeseka.shelflife.shared.presentation.util.SnackbarType
 import com.eeseka.shelflife.shared.presentation.util.currentDeviceConfiguration
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import shelflife.feature.settings.generated.resources.Res
+import shelflife.feature.settings.generated.resources.about
+import shelflife.feature.settings.generated.resources.app_version_label
 import shelflife.feature.settings.generated.resources.cancel
 import shelflife.feature.settings.generated.resources.data
 import shelflife.feature.settings.generated.resources.delete
 import shelflife.feature.settings.generated.resources.delete_account_question
 import shelflife.feature.settings.generated.resources.delete_account_with_question_mark
 import shelflife.feature.settings.generated.resources.general
+import shelflife.feature.settings.generated.resources.made_with_love
 import shelflife.feature.settings.generated.resources.notification_permission_required
 import shelflife.feature.settings.generated.resources.ok
 import shelflife.feature.settings.generated.resources.open_settings
@@ -75,6 +90,9 @@ import shelflife.feature.settings.generated.resources.sign_out
 import shelflife.feature.settings.generated.resources.sign_out_question
 import shelflife.feature.settings.generated.resources.sign_out_with_question_mark
 import shelflife.feature.settings.generated.resources.to_continue_please_grant_permission_in_app_settings
+import shelflife.feature.settings.generated.resources.user_id_copied
+
+private const val PRIVACY_URL = "https://eeseka.github.io/ShelfLife/privacy"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,9 +102,13 @@ fun SettingsScreen(
     onAction: (SettingsAction) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val permissionController = rememberPermissionController()
     val config = currentDeviceConfiguration()
     val hapticFeedback = LocalHapticFeedback.current
+
+    val uriHandler = LocalUriHandler.current
+    val clipboardManager = LocalClipboardManager.current
 
     var isSignInWithGoogleLoading by remember { mutableStateOf(false) }
 
@@ -148,7 +170,7 @@ fun SettingsScreen(
         }
     }
 
-    // Preferences Content (General + Data)
+    // Preferences Content (General + Data + About)
     val preferencesContent: @Composable () -> Unit = {
         Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
             SettingsSection(title = stringResource(Res.string.general)) {
@@ -178,24 +200,80 @@ fun SettingsScreen(
                     isConnected = state.isConnectedToInternet
                 )
             }
+
+            SettingsSection(title = stringResource(Res.string.about)) {
+                PrivacyPolicyItem(
+                    onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        uriHandler.openUri(PRIVACY_URL)
+                    }
+                )
+            }
         }
     }
 
     // Footer Actions
     val footerContent: @Composable () -> Unit = {
-        SettingsFooter(
-            isGuest = state.user !is User.Authenticated,
-            isSigningOut = state.isSigningOut,
-            isDeleting = state.isDeletingAccount,
-            onSignOut = {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                showLogoutConfirmation = true
-            },
-            onDelete = {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
-                showDeleteAccountConfirmation = true
-            }
-        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SettingsFooter(
+                isGuest = state.user !is User.Authenticated,
+                isSigningOut = state.isSigningOut,
+                isDeleting = state.isDeletingAccount,
+                onSignOut = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    showLogoutConfirmation = true
+                },
+                onDelete = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.Reject)
+                    showDeleteAccountConfirmation = true
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = stringResource(Res.string.made_with_love),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            val versionText = stringResource(Res.string.app_version_label)
+            val userId = state.user?.id ?: ""
+            val metadataText = if (userId.isNotEmpty()) "$versionText • $userId" else versionText
+            Text(
+                text = metadataText,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f) // Prevent it from touching edges if ID is long
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable(
+                        enabled = userId.isNotEmpty(),
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(userId))
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                snackbarHostState.showSnackbar(
+                                    ShelfLifeSnackbarVisuals(
+                                        getString(Res.string.user_id_copied),
+                                        SnackbarType.Info
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    .padding(vertical = 4.dp)
+            )
+        }
     }
 
     ShelfLifeScaffold(

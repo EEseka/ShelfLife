@@ -45,6 +45,7 @@ import shelflife.feature.auth.generated.resources.Res
 import shelflife.feature.auth.generated.resources.auth_disclosure
 
 private const val ANIMATION_GROCERY_BAG = "grocery_delivery.json"
+private const val PRIVACY_URL = "https://eeseka.github.io/ShelfLife/privacy"
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -57,7 +58,6 @@ fun AuthScreen(
     var isGuestSigningIn by remember { mutableStateOf(false) }
 
     val uriHandler = LocalUriHandler.current
-    val privacyUrl = "https://www.google.com"
 
     val config = currentDeviceConfiguration()
 
@@ -154,7 +154,7 @@ fun AuthScreen(
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.padding(bottom = 24.dp)
                                 .clickable {
-                                    uriHandler.openUri(privacyUrl)
+                                    uriHandler.openUri(PRIVACY_URL)
                                 }
                         )
                     }
@@ -225,7 +225,7 @@ fun AuthScreen(
                                     textAlign = TextAlign.Center,
                                     textDecoration = TextDecoration.Underline,
                                     modifier = Modifier.clickable {
-                                        uriHandler.openUri(privacyUrl)
+                                        uriHandler.openUri(PRIVACY_URL)
                                     }
                                 )
                             }

@@ -9,7 +9,7 @@ interface RemoteInsightStorageService {
     suspend fun createInsightItem(
         userId: String,
         insightItem: InsightItem
-    ): EmptyResult<DataError.RemoteStorage>
+    ): Result<InsightItem, DataError.RemoteStorage>
 
     suspend fun getInsightItems(userId: String): Result<List<InsightItem>, DataError.RemoteStorage>
 
@@ -21,7 +21,7 @@ interface RemoteInsightStorageService {
     suspend fun updateInsightItem(
         userId: String,
         insightItem: InsightItem
-    ): EmptyResult<DataError.RemoteStorage>
+    ): Result<InsightItem, DataError.RemoteStorage>
 
     suspend fun deleteInsightItem(
         userId: String,

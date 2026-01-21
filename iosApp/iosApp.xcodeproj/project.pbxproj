@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4710A5542F1EDF78007CD66A /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 4710A5532F1EDF78007CD66A /* FirebaseAppCheck */; };
 		47F7B7F32EEF0B910045BA3D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 47F7B7F22EEF0B910045BA3D /* GoogleSignIn */; };
 		47F7B7F52EEF0B910045BA3D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 47F7B7F42EEF0B910045BA3D /* GoogleSignInSwift */; };
 		47F7B7F82EEF18A30045BA3D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 47F7B7F72EEF18A30045BA3D /* FirebaseAnalytics */; };
@@ -59,6 +60,7 @@
 				47F7B7F82EEF18A30045BA3D /* FirebaseAnalytics in Frameworks */,
 				47F7B8022EEF18A30045BA3D /* FirebaseStorage in Frameworks */,
 				47F7B7FA2EEF18A30045BA3D /* FirebaseAuth in Frameworks */,
+				4710A5542F1EDF78007CD66A /* FirebaseAppCheck in Frameworks */,
 				47F7B8002EEF18A30045BA3D /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,8 +81,16 @@
 			children = (
 				B6230D5351FBB431C82643B6 /* Configuration */,
 				99C58CAFE42AE4F55192E388 /* iosApp */,
+				4710A5522F1EDF78007CD66A /* Frameworks */,
 				2C4B0116469F8255E55B4E72 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		4710A5522F1EDF78007CD66A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -94,6 +104,7 @@
 				52F6E5B6F94F85FD509A6145 /* Sources */,
 				6C309EA229E5DC0CAA429165 /* Frameworks */,
 				8AA4728F1911662A9503CA63 /* Resources */,
+				4710A5512F1EBB20007CD66A /* Firebase Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -112,6 +123,7 @@
 				47F7B7FD2EEF18A30045BA3D /* FirebaseCrashlytics */,
 				47F7B7FF2EEF18A30045BA3D /* FirebaseFirestore */,
 				47F7B8012EEF18A30045BA3D /* FirebaseStorage */,
+				4710A5532F1EDF78007CD66A /* FirebaseAppCheck */,
 			);
 			productName = iosApp;
 			productReference = 464B4CF27B9587130B09CC15 /* ShelfLife.app */;
@@ -166,6 +178,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		4710A5512F1EBB20007CD66A /* Firebase Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Firebase Crashlytics";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		C346C60C7D374A43F8049812 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -359,6 +394,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = K3238M7P37;
 				ENABLE_PREVIEWS = YES;
@@ -424,6 +460,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4710A5532F1EDF78007CD66A /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47F7B7F62EEF18A30045BA3D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
 		47F7B7F22EEF0B910045BA3D /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 47F7B7F12EEF0B910045BA3D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

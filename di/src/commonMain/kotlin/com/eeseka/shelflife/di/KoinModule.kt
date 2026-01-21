@@ -18,7 +18,7 @@ import com.eeseka.shelflife.shared.data.database.local.RoomLocalPantryStorageSer
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemoteInsightStorageService
 import com.eeseka.shelflife.shared.data.database.remote.FirebaseFirestoreRemotePantryStorageService
 import com.eeseka.shelflife.shared.data.export.NativeFileExportService
-import com.eeseka.shelflife.shared.data.logging.KermitLogger
+import com.eeseka.shelflife.shared.data.logging.KermitAndFirebaseCrashlyticsLogger
 import com.eeseka.shelflife.shared.data.media.NativeImageCompressionService
 import com.eeseka.shelflife.shared.data.networking.HttpClientFactory
 import com.eeseka.shelflife.shared.data.networking.KtorApiService
@@ -47,7 +47,7 @@ import org.koin.dsl.module
 
 val sharedModule = module {
     // Shared module
-    single<ShelfLifeLogger> { KermitLogger }
+    single<ShelfLifeLogger> { KermitAndFirebaseCrashlyticsLogger }
     single {
         HttpClientFactory(get()).create(get())
     }

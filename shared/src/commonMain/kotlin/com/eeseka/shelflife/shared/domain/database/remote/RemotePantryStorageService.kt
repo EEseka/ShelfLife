@@ -9,7 +9,7 @@ interface RemotePantryStorageService {
     suspend fun createPantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.RemoteStorage>
+    ): Result<PantryItem, DataError.RemoteStorage>
 
     suspend fun getPantryItems(userId: String): Result<List<PantryItem>, DataError.RemoteStorage>
     suspend fun getPantryItem(
@@ -20,7 +20,7 @@ interface RemotePantryStorageService {
     suspend fun updatePantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.RemoteStorage>
+    ): Result<PantryItem, DataError.RemoteStorage>
 
     suspend fun deletePantryItem(
         userId: String,

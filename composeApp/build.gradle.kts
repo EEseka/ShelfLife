@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 kotlin {
@@ -23,8 +24,6 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            // NutriSport exported Notifier here, we can do the same if needed later
-            // export(project(":shared"))
         }
     }
 
@@ -36,6 +35,10 @@ kotlin {
 
             // Needed to start the Koin graph in the Application class
             implementation(libs.koin.android)
+
+            // App Check (Firebase)
+            implementation(libs.google.firebase.appcheck.playintegrity)
+            implementation(libs.google.firebase.appcheck.debug)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -87,6 +90,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

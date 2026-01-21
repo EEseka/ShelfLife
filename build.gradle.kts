@@ -13,4 +13,7 @@ plugins {
 
     // Serialization (JSON) - NEEDED for Ktor
     alias(libs.plugins.kotlinSerialization) apply false
+
+    // Crashlytics (Firebase)
+    alias(libs.plugins.firebase.crashlytics) apply false
 }

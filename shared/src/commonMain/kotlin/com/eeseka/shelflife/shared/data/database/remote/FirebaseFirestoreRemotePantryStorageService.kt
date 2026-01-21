@@ -42,7 +42,7 @@ class FirebaseFirestoreRemotePantryStorageService(
     override suspend fun createPantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.RemoteStorage> {
+    ): Result<PantryItem, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val pantryCollection =
                 Firebase.firestore.collection(BASE_COLLECTION_PATH).document(userId)
@@ -58,6 +58,7 @@ class FirebaseFirestoreRemotePantryStorageService(
             val processedItem = uploadImagesIfNeeded(userId, pantryItem)
 
             pantryCollection.document(processedItem.id).set(processedItem.toSerializable())
+            processedItem
         }
     }
 
@@ -95,7 +96,7 @@ class FirebaseFirestoreRemotePantryStorageService(
     override suspend fun updatePantryItem(
         userId: String,
         pantryItem: PantryItem
-    ): EmptyResult<DataError.RemoteStorage> {
+    ): Result<PantryItem, DataError.RemoteStorage> {
         return safeFirebaseFirestoreCall(shelfLifeLogger) {
             val document = Firebase.firestore
                 .collection(BASE_COLLECTION_PATH).document(userId)
@@ -115,6 +116,7 @@ class FirebaseFirestoreRemotePantryStorageService(
             deleteOldImagesIfReplaced(oldItem, processedItem)
 
             document.set(processedItem.toSerializable())
+            processedItem
         }
     }
 

@@ -19,8 +19,10 @@ import com.eeseka.shelflife.shared.domain.util.asEmptyResult
 import com.eeseka.shelflife.shared.domain.util.onFailure
 import com.eeseka.shelflife.shared.domain.util.onSuccess
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,6 +31,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
@@ -43,6 +47,9 @@ class OfflineFirstPantryRepository(
     private val settingsService: SettingsService,
     private val logger: ShelfLifeLogger
 ) : PantryRepository {
+    // Thread-safe map to track active background jobs
+    private val activeJobs = mutableMapOf<String, Job>()
+    private val activeJobsMutex = Mutex()
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // --- READS ---
@@ -108,10 +115,10 @@ class OfflineFirstPantryRepository(
         if (localResult is Result.Success) {
             refreshNotifications()
 
-            repositoryScope.launch {
+            val job = repositoryScope.launch(start = CoroutineStart.LAZY) {
                 remoteDataSource.createPantryItem(userId, item)
-                    .onSuccess {
-                        localDataSource.upsertPantryItem(item, isSynced = true)
+                    .onSuccess { updatedRemoteItem ->
+                        localDataSource.upsertPantryItem(updatedRemoteItem, isSynced = true)
                     }
                     .onFailure {
                         // If it failed (Offline), WHO CARES?
@@ -121,8 +128,19 @@ class OfflineFirstPantryRepository(
                         logger.info("Optimistic Sync: Immediate upload failed, queued for later.")
                     }
             }
-        }
 
+            // Track the job safely
+            activeJobsMutex.withLock { activeJobs[item.id] = job }
+
+            // Clean up when done
+            job.invokeOnCompletion {
+                repositoryScope.launch {
+                    activeJobsMutex.withLock { activeJobs.remove(item.id) }
+                }
+            }
+
+            job.start()
+        }
         return localResult
     }
 
@@ -134,15 +152,26 @@ class OfflineFirstPantryRepository(
         if (localResult is Result.Success) {
             refreshNotifications()
 
-            repositoryScope.launch {
+            val job = repositoryScope.launch(start = CoroutineStart.LAZY) {
                 remoteDataSource.updatePantryItem(userId, item)
-                    .onSuccess {
-                        localDataSource.upsertPantryItem(item, isSynced = true)
+                    .onSuccess { updatedRemoteItem ->
+                        localDataSource.upsertPantryItem(updatedRemoteItem, isSynced = true)
                     }
                     .onFailure {
                         logger.info("Optimistic Sync: Immediate upload failed, queued for later.")
                     }
             }
+
+            activeJobsMutex.withLock { activeJobs[item.id] = job }
+
+
+            job.invokeOnCompletion {
+                repositoryScope.launch {
+                    activeJobsMutex.withLock { activeJobs.remove(item.id) }
+                }
+            }
+
+            job.start()
         }
         return localResult
     }
@@ -174,17 +203,31 @@ class OfflineFirstPantryRepository(
     ): EmptyResult<DataError> {
         val userId = getUserIdOrError() ?: return Result.Failure(DataError.Auth.FORBIDDEN)
 
+        val pendingJob = activeJobsMutex.withLock { activeJobs[item.id] }
+        if (pendingJob != null) {
+            logger.info("Race Condition Avoided: Waiting for pending sync on ${item.id}...")
+            pendingJob.join() // Suspend here until the background upload finishes
+        }
+
+        val freshItemResult = localDataSource.getPantryItem(item.id)
+
+        val sourceItem = if (freshItemResult is Result.Success && freshItemResult.data != null) {
+            freshItemResult.data!!
+        } else {
+            item
+        }
+
         val insightItem = InsightItem(
-            id = item.id,
-            name = item.name,
-            imageUrl = item.imageUrl,
-            quantity = item.quantity,
-            quantityUnit = item.quantityUnit,
+            id = sourceItem.id,
+            name = sourceItem.name,
+            imageUrl = sourceItem.imageUrl,
+            quantity = sourceItem.quantity,
+            quantityUnit = sourceItem.quantityUnit,
             status = status,
             actionDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-            nutriScore = item.nutriScore,
-            novaGroup = item.novaGroup,
-            ecoScore = item.ecoScore
+            nutriScore = sourceItem.nutriScore,
+            novaGroup = sourceItem.novaGroup,
+            ecoScore = sourceItem.ecoScore
         )
 
         val insertResult = insightLocalDataSource.upsertInsightItem(insightItem, isSynced = false)
@@ -202,8 +245,8 @@ class OfflineFirstPantryRepository(
         repositoryScope.launch {
             val insightDeferred = async {
                 insightRemoteDataSource.createInsightItem(userId, insightItem)
-                    .onSuccess {
-                        insightLocalDataSource.upsertInsightItem(insightItem, isSynced = true)
+                    .onSuccess { updatedRemoteItem ->
+                        insightLocalDataSource.upsertInsightItem(updatedRemoteItem, isSynced = true)
                     }
             }
 
@@ -258,10 +301,10 @@ class OfflineFirstPantryRepository(
                                     // Item exists on server - update it
                                     is Result.Success -> {
                                         remoteDataSource.updatePantryItem(userId, item)
-                                            .onSuccess {
+                                            .onSuccess { updatedRemoteItem ->
                                                 // Mark as synced locally
                                                 localDataSource.upsertPantryItem(
-                                                    item,
+                                                    updatedRemoteItem,
                                                     isSynced = true
                                                 )
                                                 logger.info("Successfully updated and synced item: ${item.id}")
@@ -276,10 +319,10 @@ class OfflineFirstPantryRepository(
                                     is Result.Failure -> {
                                         if (result.error == DataError.RemoteStorage.NOT_FOUND) {
                                             remoteDataSource.createPantryItem(userId, item)
-                                                .onSuccess {
+                                                .onSuccess { updatedRemoteItem ->
                                                     // Mark as synced locally
                                                     localDataSource.upsertPantryItem(
-                                                        item,
+                                                        updatedRemoteItem,
                                                         isSynced = true
                                                     )
                                                     logger.info("Successfully created and synced item: ${item.id}")
