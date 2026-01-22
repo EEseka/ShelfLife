@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -251,55 +252,63 @@ private fun InsightContentAdaptive(
         }
     } else {
         // TABLET/LANDSCAPE LAYOUT (Split View)
-        Row(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            // Left Pane: Controls & Summary
-            Column(
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .widthIn(max = 1200.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                InsightFilterRow(
-                    selectedTimeFilter = state.selectedTimeFilter,
-                    onFilterChange = { onAction(InsightAction.OnTimeFilterChange(it)) }
-                )
-
-                InsightSummaryCard(
-                    consumedPercentage = state.consumedPercentage,
-                    consumedCount = state.consumedCount,
-                    wastedCount = state.wastedCount
-                )
-
-                if (hasHealthData) {
-                    HealthStatsCard(
-                        nutriScoreDistribution = state.nutriScoreStats,
-                        ultraProcessedCount = state.ultraProcessedCount,
-                        wastedGoodEcoCount = state.wastedGoodEcoCount
-                    )
-                }
-            }
-
-            // Right Pane: History List
-            Column(
-                modifier = Modifier.weight(1.5f).fillMaxHeight()
-            ) {
-                Text(
-                    text = stringResource(Res.string.history),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                // Left Pane: Controls & Summary
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(state.items, key = { it.id }) { item ->
-                        InsightItemCard(item)
+                    InsightFilterRow(
+                        selectedTimeFilter = state.selectedTimeFilter,
+                        onFilterChange = { onAction(InsightAction.OnTimeFilterChange(it)) }
+                    )
+
+                    InsightSummaryCard(
+                        consumedPercentage = state.consumedPercentage,
+                        consumedCount = state.consumedCount,
+                        wastedCount = state.wastedCount
+                    )
+
+                    if (hasHealthData) {
+                        HealthStatsCard(
+                            nutriScoreDistribution = state.nutriScoreStats,
+                            ultraProcessedCount = state.ultraProcessedCount,
+                            wastedGoodEcoCount = state.wastedGoodEcoCount
+                        )
+                    }
+                }
+
+                // Right Pane: History List
+                Column(
+                    modifier = Modifier.weight(1.5f).fillMaxHeight()
+                ) {
+                    Text(
+                        text = stringResource(Res.string.history),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(state.items, key = { it.id }) { item ->
+                            InsightItemCard(item)
+                        }
                     }
                 }
             }

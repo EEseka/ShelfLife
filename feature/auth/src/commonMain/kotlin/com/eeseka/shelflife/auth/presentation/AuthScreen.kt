@@ -114,6 +114,7 @@ fun AuthScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
+                            .widthIn(max = 600.dp)
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {

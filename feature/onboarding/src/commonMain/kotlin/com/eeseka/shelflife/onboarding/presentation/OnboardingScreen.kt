@@ -169,8 +169,9 @@ fun OnboardingScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .then(
-                            if (config.isWideScreen) Modifier.widthIn(max = 600.dp)
-                            else Modifier.fillMaxWidth()
+                            if (config.isWideScreen || config == DeviceConfiguration.TABLET_PORTRAIT) {
+                                Modifier.widthIn(max = 600.dp)
+                            } else Modifier.fillMaxWidth()
                         )
                         .padding(24.dp)
                 ) {
@@ -197,7 +198,7 @@ fun OnboardingScreen(
 
 @Preview
 @Composable
-fun OnboardingScreenPreview() {
+private fun OnboardingScreenPreview() {
     ShelfLifeTheme {
         OnboardingScreen(
             onAction = {}

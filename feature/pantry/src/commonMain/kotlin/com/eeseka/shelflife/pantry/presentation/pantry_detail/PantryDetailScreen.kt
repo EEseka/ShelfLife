@@ -2,6 +2,7 @@ package com.eeseka.shelflife.pantry.presentation.pantry_detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -148,79 +150,85 @@ fun PantryDetailScreen(
                 ) {
                     Spacer(modifier = Modifier.height(heroImageHeight - 32.dp))
                     // Main Content (The "Sheet")
-                    Column(
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-                            )
-                            .padding(24.dp),
-                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        DetailHeader(
-                            itemName = item.name,
-                            itemBrand = item.brand
-                        )
-
-                        ExpiryStatusCard(item.expiryDate)
-
-                        // Data Grid (Quantity & Quantity Unit, Location, Purchase Date, Packaging Size, Opened Date)
-                        DetailStatsGrid(item)
-
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-                        )
-
-                        // Health & Science
-                        if (item.nutriScore != null || item.ecoScore != null || item.novaGroup != null) {
-                            HealthScoresSection(
-                                nutriScore = item.nutriScore,
-                                ecoScore = item.ecoScore,
-                                novaGroup = item.novaGroup
+                        Column(
+                            modifier = Modifier
+                                .widthIn(max = 600.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.background,
+                                    shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
+                                )
+                                .padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(24.dp)
+                        ) {
+                            DetailHeader(
+                                itemName = item.name,
+                                itemBrand = item.brand
                             )
-                        }
 
-                        if (item.hasNutritionInfo()) {
-                            NutritionInfoPanel(
-                                caloriesPer100g = item.caloriesPer100g,
-                                sugarPer100g = item.sugarPer100g,
-                                fatPer100g = item.fatPer100g,
-                                proteinPer100g = item.proteinPer100g
-                            )
-                        }
+                            ExpiryStatusCard(item.expiryDate)
 
-                        if (item.allergens.isNotEmpty()) {
-                            DetailChipSection(
-                                title = stringResource(Res.string.allergens),
-                                items = item.allergens.map { it.cleanTag() },
-                                color = MaterialTheme.colorScheme.error
-                            )
-                        }
+                            // Data Grid (Quantity & Quantity Unit, Location, Purchase Date, Packaging Size, Opened Date)
+                            DetailStatsGrid(item)
 
-                        if (item.labels.isNotEmpty()) {
-                            DetailChipSection(
-                                title = stringResource(Res.string.labels),
-                                items = item.labels.map { it.cleanTag() },
-                                color = MaterialTheme.colorScheme.primary
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                             )
-                        }
-                        // Technical / Metadata
-                        DetailMetadataSection(
-                            barcode = item.barcode,
-                            openDate = item.openDate,
-                            packagingSize = item.packagingSize,
-                            showSnackbar = {
-                                scope.launch {
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                    snackbarHostState.showSnackbar(
-                                        ShelfLifeSnackbarVisuals(
-                                            getString(resource = Res.string.barcode_copied),
-                                            SnackbarType.Info
-                                        )
-                                    )
-                                }
+
+                            // Health & Science
+                            if (item.nutriScore != null || item.ecoScore != null || item.novaGroup != null) {
+                                HealthScoresSection(
+                                    nutriScore = item.nutriScore,
+                                    ecoScore = item.ecoScore,
+                                    novaGroup = item.novaGroup
+                                )
                             }
-                        )
+
+                            if (item.hasNutritionInfo()) {
+                                NutritionInfoPanel(
+                                    caloriesPer100g = item.caloriesPer100g,
+                                    sugarPer100g = item.sugarPer100g,
+                                    fatPer100g = item.fatPer100g,
+                                    proteinPer100g = item.proteinPer100g
+                                )
+                            }
+
+                            if (item.allergens.isNotEmpty()) {
+                                DetailChipSection(
+                                    title = stringResource(Res.string.allergens),
+                                    items = item.allergens.map { it.cleanTag() },
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+
+                            if (item.labels.isNotEmpty()) {
+                                DetailChipSection(
+                                    title = stringResource(Res.string.labels),
+                                    items = item.labels.map { it.cleanTag() },
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            // Technical / Metadata
+                            DetailMetadataSection(
+                                barcode = item.barcode,
+                                openDate = item.openDate,
+                                packagingSize = item.packagingSize,
+                                showSnackbar = {
+                                    scope.launch {
+                                        snackbarHostState.currentSnackbarData?.dismiss()
+                                        snackbarHostState.showSnackbar(
+                                            ShelfLifeSnackbarVisuals(
+                                                getString(resource = Res.string.barcode_copied),
+                                                SnackbarType.Info
+                                            )
+                                        )
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
