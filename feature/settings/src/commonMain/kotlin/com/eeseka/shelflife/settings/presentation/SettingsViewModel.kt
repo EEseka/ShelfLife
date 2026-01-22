@@ -225,7 +225,7 @@ class SettingsViewModel(
                     _eventChannel.send(SettingsEvent.Error(error.toUiText()))
                 }
         }
-    } // TODO: Don't forget to clean up in firebase console
+    }
 
     @OptIn(ExperimentalTime::class)
     private fun exportPantryData() {

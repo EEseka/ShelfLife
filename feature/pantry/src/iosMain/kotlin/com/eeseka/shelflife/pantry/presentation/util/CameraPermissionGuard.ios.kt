@@ -56,7 +56,7 @@ actual fun CameraPermissionGuard(
     val openSettings = {
         val settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
         if (settingsUrl != null && UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-            UIApplication.sharedApplication.openURL(settingsUrl)
+            UIApplication.sharedApplication.openURL(settingsUrl, emptyMap<Any?, Any?>(), null)
         }
     }
 

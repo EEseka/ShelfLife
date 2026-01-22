@@ -49,7 +49,6 @@ class DataStoreSettingsService(
             if (themeName != null) enumValueOf<AppTheme>(themeName) else AppTheme.SYSTEM
         } catch (e: IllegalArgumentException) {
             // Fallback if data is corrupted or unknown theme value
-            // TODO: Log to crash reporting (e.g., Firebase Crashlytics)
             shelfLifeLogger.warn("Unknown theme value: $themeName - more details: ${e.message}")
             AppTheme.SYSTEM
         }
@@ -69,7 +68,6 @@ class DataStoreSettingsService(
             } catch (e: Exception) {
                 // If JSON format changes in future update, don't crash the app. Just return null.
                 // This also handles cases where user data is corrupted.
-                // TODO: Log to crash reporting (e.g., Firebase Crashlytics)
                 shelfLifeLogger.warn("Error decoding user cache: ${e.message}")
                 null
             }
