@@ -113,8 +113,8 @@ fun AuthScreen(
                 DeviceConfiguration.TABLET_PORTRAIT -> {
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
                             .widthIn(max = 600.dp)
+                            .fillMaxSize()
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {

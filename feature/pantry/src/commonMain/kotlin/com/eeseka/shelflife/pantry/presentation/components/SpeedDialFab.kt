@@ -48,7 +48,7 @@ import shelflife.feature.pantry.generated.resources.scan_product
 fun SpeedDialFab(
     isExpanded: Boolean,
     onToggle: () -> Unit,
-    onScan: () -> Unit,
+    onScan: (() -> Unit)?,
     onManual: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -119,36 +119,38 @@ fun SpeedDialFab(
         }
 
         // Mini FAB 2: Scan
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = slideInVertically { it } + fadeIn() + scaleIn(),
-            exit = slideOutVertically { it } + fadeOut() + scaleOut()
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 16.dp)
+        if (onScan != null) {
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = slideInVertically { it } + fadeIn() + scaleIn(),
+                exit = slideOutVertically { it } + fadeOut() + scaleOut()
             ) {
-                Surface(
-                    shape = MaterialTheme.shapes.small,
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shadowElevation = 2.dp,
-                    modifier = Modifier.padding(end = 8.dp)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
-                    Text(
-                        text = stringResource(Res.string.scan_product),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-                SmallFloatingActionButton(
-                    onClick = {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
-                        onScan()
-                    },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ) {
-                    Icon(Icons.Default.QrCodeScanner, stringResource(Res.string.scan_product))
+                    Surface(
+                        shape = MaterialTheme.shapes.small,
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        shadowElevation = 2.dp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.scan_product),
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    SmallFloatingActionButton(
+                        onClick = {
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                            onScan()
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    ) {
+                        Icon(Icons.Default.QrCodeScanner, stringResource(Res.string.scan_product))
+                    }
                 }
             }
         }

@@ -47,6 +47,7 @@ import com.eeseka.shelflife.pantry.presentation.components.PantryListShimmer
 import com.eeseka.shelflife.pantry.presentation.components.SpeedDialFab
 import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryAction
 import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryState
+import com.eeseka.shelflife.pantry.presentation.util.isAppleSiliconMac
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
@@ -73,6 +74,8 @@ fun PantryListScreen(
     val focusManager = LocalFocusManager.current
     val hapticFeedback = LocalHapticFeedback.current
     var isFabExpanded by remember { mutableStateOf(false) }
+
+    val isMac = remember { isAppleSiliconMac() }
 
     ObserveAsEvents(events) { event ->
         when (event) {
@@ -233,9 +236,11 @@ fun PantryListScreen(
             SpeedDialFab(
                 isExpanded = isFabExpanded,
                 onToggle = { isFabExpanded = !isFabExpanded },
-                onScan = {
-                    isFabExpanded = false
-                    onAction(PantryAction.OnScannerClick)
+                onScan = if (isMac) null else {
+                    {
+                        isFabExpanded = false
+                        onAction(PantryAction.OnScannerClick)
+                    }
                 },
                 onManual = {
                     isFabExpanded = false
