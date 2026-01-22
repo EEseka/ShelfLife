@@ -7,7 +7,8 @@ import kotlinx.datetime.LocalDate
 
 sealed interface PantryFormAction {
     // Lifecycle
-    data class Init(val item: PantryItem?, val mode: PantryFormMode) : PantryFormAction
+    data class Init(val item: PantryItem?, val mode: PantryFormMode, val defaultUnit: String) :
+        PantryFormAction
 
     // Field Updates
     data class UpdateName(val name: String) : PantryFormAction

@@ -5,7 +5,10 @@
     <string name="item_updated">Item updated successfully.</string>
     <string name="item_deleted">Item deleted.</string>
     <string name="my_pantry">My Pantry</string>
-    <string name="search_pantry">Search items...</string>
+    <string name="search_items">Search items...</string>
+    <string name="search_items_in_pantry">Search items in pantry...</string>
+    <string name="search_items_in_fridge">Search items in fridge...</string>
+    <string name="search_items_in_freezer">Search items in freezer...</string>
     <string name="all">All</string>
     <string name="pantry">Pantry</string>
     <string name="fridge">Fridge</string>
@@ -104,4 +107,8 @@
 
     <string name="item_consumed_message">Mission accomplished. Tasty work. 🫡</string>
     <string name="item_wasted_message">The bin won this round. 🗑️</string>
+
+    <string name="camera_access_required">Camera Access Required</string>
+    <string name="camera_access_description">To scan barcodes, ShelfLife needs permission to use your camera.</string>
+    <string name="open_settings">Open Settings</string>
 </resources>

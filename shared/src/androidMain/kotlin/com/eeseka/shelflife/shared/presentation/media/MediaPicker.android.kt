@@ -14,6 +14,7 @@ import com.eeseka.shelflife.shared.domain.media.PickedImage
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.util.UUID
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @Composable
@@ -47,7 +48,7 @@ class MediaPickerAndroid(private val context: Context) : MediaPicker {
     private var cameraLauncher: ((Uri) -> Unit)? = null
     private var permissionLauncher: (() -> Unit)? = null
 
-    private var activeContinuation: kotlin.coroutines.Continuation<PickedImage?>? = null
+    private var activeContinuation: Continuation<PickedImage?>? = null
     private var tempImageUri: Uri? = null
 
     fun registerLaunchers(

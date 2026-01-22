@@ -48,6 +48,7 @@ import com.eeseka.shelflife.pantry.presentation.components.SpeedDialFab
 import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryAction
 import com.eeseka.shelflife.pantry.presentation.pantry_list_detail.PantryState
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
+import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
 import com.eeseka.shelflife.shared.presentation.util.ShelfLifeSnackbarVisuals
 import com.eeseka.shelflife.shared.presentation.util.SnackbarType
@@ -55,6 +56,10 @@ import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import shelflife.feature.pantry.generated.resources.Res
 import shelflife.feature.pantry.generated.resources.my_pantry
+import shelflife.feature.pantry.generated.resources.search_items
+import shelflife.feature.pantry.generated.resources.search_items_in_freezer
+import shelflife.feature.pantry.generated.resources.search_items_in_fridge
+import shelflife.feature.pantry.generated.resources.search_items_in_pantry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -163,8 +168,15 @@ fun PantryListScreen(
                                         contentAlignment = Alignment.Center,
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
+                                        val placeholderRes = when (state.selectedLocationFilter) {
+                                            StorageLocation.PANTRY -> Res.string.search_items_in_pantry
+                                            StorageLocation.FRIDGE -> Res.string.search_items_in_fridge
+                                            StorageLocation.FREEZER -> Res.string.search_items_in_freezer
+                                            null -> Res.string.search_items
+                                        }
                                         PantryListHeader(
                                             searchQuery = state.searchQuery,
+                                            placeholderRes = placeholderRes,
                                             onQueryChange = {
                                                 onAction(
                                                     PantryAction.OnSearchQueryChange(

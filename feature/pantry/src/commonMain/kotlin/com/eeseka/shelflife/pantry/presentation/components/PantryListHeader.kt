@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import com.eeseka.shelflife.shared.domain.pantry.StorageLocation
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import shelflife.feature.pantry.generated.resources.Res
@@ -30,12 +31,13 @@ import shelflife.feature.pantry.generated.resources.close
 import shelflife.feature.pantry.generated.resources.freezer
 import shelflife.feature.pantry.generated.resources.fridge
 import shelflife.feature.pantry.generated.resources.pantry
-import shelflife.feature.pantry.generated.resources.search_pantry
+import shelflife.feature.pantry.generated.resources.search_items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantryListHeader(
     searchQuery: String,
+    placeholderRes: StringResource,
     onQueryChange: (String) -> Unit,
     selectedLocation: StorageLocation?,
     onLocationChange: (StorageLocation?) -> Unit,
@@ -57,7 +59,7 @@ fun PantryListHeader(
                     },
                     expanded = false,
                     onExpandedChange = {},
-                    placeholder = { Text(stringResource(Res.string.search_pantry)) },
+                    placeholder = { Text(stringResource(placeholderRes)) },
                     leadingIcon = { Icon(Icons.Default.Search, null) },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
@@ -122,6 +124,7 @@ private fun PantryListHeaderPreview() {
     ShelfLifeTheme {
         PantryListHeader(
             searchQuery = "",
+            placeholderRes = Res.string.search_items,
             onQueryChange = { },
             selectedLocation = null,
             onLocationChange = { },

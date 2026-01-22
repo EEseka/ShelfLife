@@ -45,7 +45,7 @@ class PantryFormViewModel(
 
     fun onAction(action: PantryFormAction) {
         when (action) {
-            is PantryFormAction.Init -> init(action.item, action.mode)
+            is PantryFormAction.Init -> init(action.item, action.mode, action.defaultUnit)
             is PantryFormAction.UpdateName -> onNameChange(action.name)
             is PantryFormAction.UpdateBrand -> onBrandChange(action.brand)
             is PantryFormAction.UpdateQuantity -> onQuantityChange(action.quantity)
@@ -60,7 +60,7 @@ class PantryFormViewModel(
         }
     }
 
-    private fun init(item: PantryItem?, mode: PantryFormMode) {
+    private fun init(item: PantryItem?, mode: PantryFormMode, defaultUnit: String) {
         // Only initialize if we haven't been initialized yet (to prevent overriding user edits on rotation)
         if (_state.value.originalItem == null && item != null) {
             _state.update { currentState ->
@@ -70,7 +70,7 @@ class PantryFormViewModel(
                     name = item.name,
                     brand = item.brand ?: "",
                     quantity = item.quantity.clean(),
-                    quantityUnit = item.quantityUnit,
+                    quantityUnit = item.quantityUnit.ifBlank { defaultUnit },
                     storageLocation = item.storageLocation,
                     expiryDate = item.expiryDate,
                     purchaseDate = item.purchaseDate,

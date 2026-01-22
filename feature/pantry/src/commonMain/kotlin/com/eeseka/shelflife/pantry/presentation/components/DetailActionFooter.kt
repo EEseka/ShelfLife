@@ -2,6 +2,7 @@ package com.eeseka.shelflife.pantry.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
 import org.jetbrains.compose.resources.stringResource
@@ -50,13 +52,16 @@ fun DetailActionFooter(
             if (isLoading) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             }
 
-            Column(
+            BoxWithConstraints(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
             ) {
+                val showIcons = maxWidth > 330.dp
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -71,13 +76,15 @@ fun DetailActionFooter(
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
                     ) {
-                        if (!isLoading) {
+                        if (showIcons && !isLoading) {
                             Icon(Icons.Outlined.Delete, null)
                             Spacer(Modifier.width(8.dp))
                         }
                         Text(
                             text = stringResource(Res.string.wasted),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
@@ -89,13 +96,15 @@ fun DetailActionFooter(
                         },
                         modifier = Modifier.weight(1f).height(56.dp)
                     ) {
-                        if (!isLoading) {
+                        if (showIcons && !isLoading) {
                             Icon(Icons.Default.CheckCircle, null)
                             Spacer(Modifier.width(8.dp))
                         }
                         Text(
                             text = stringResource(Res.string.consumed),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold)
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -104,9 +113,9 @@ fun DetailActionFooter(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 320)
 @Composable
-fun DetailActionFooterPreview() {
+fun DetailActionFooterSmallScreenPreview() {
     ShelfLifeTheme {
         DetailActionFooter(
             isLoading = false,
@@ -116,15 +125,14 @@ fun DetailActionFooterPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 411)
 @Composable
-fun DetailActionFooterPreviewLoading() {
+fun DetailActionFooterStandardPreview() {
     ShelfLifeTheme {
         DetailActionFooter(
-            isLoading = true,
+            isLoading = false,
             onConsumed = {},
             onWasted = {}
         )
     }
 }
-

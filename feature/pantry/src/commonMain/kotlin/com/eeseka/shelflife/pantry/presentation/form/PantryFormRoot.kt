@@ -8,7 +8,10 @@ import com.eeseka.shelflife.pantry.presentation.util.PantryFormMode
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeAdaptiveSheetLayout
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import shelflife.feature.pantry.generated.resources.Res
+import shelflife.feature.pantry.generated.resources.pieces_unit
 
 @Composable
 fun PantryFormRoot(
@@ -21,12 +24,15 @@ fun PantryFormRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val defaultUnit = stringResource(Res.string.pieces_unit)
+
     // Initialize the form with initial data
     LaunchedEffect(initialItem.id, mode) {
         viewModel.onAction(
             PantryFormAction.Init(
                 item = initialItem,
-                mode = mode
+                mode = mode,
+                defaultUnit = defaultUnit
             )
         )
     }
