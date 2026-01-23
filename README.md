@@ -1,7 +1,7 @@
 # ShelfLife 🍎
 
-**ShelfLife** is a production-grade food inventory and expiry tracking application built with *
-*Kotlin Multiplatform (KMP)** and **Compose Multiplatform**.
+**ShelfLife** is a production-grade food inventory and expiry tracking application built with
+*Kotlin Multiplatform (KMP)* and **Compose Multiplatform**.
 
 It demonstrates a unified codebase running natively on **Android** and **iOS**, featuring
 offline-first data synchronization, adaptive layouts for Tablets/Laptops, and platform-specific
@@ -13,9 +13,9 @@ hardware handling.
 
 See ShelfLife in action on both platforms.
 
-|                        **iOS (iPhone 13 Pro)**                        |                        **Android (Tablet Split-View)**                        |
-|:---------------------------------------------------------------------:|:-----------------------------------------------------------------------------:|
-| [**▶️ Watch iOS Demo**](docs/media/ios_demo.mp4)<br>*(Click to play)* | [**▶️ Watch Android Demo**](docs/media/android_demo.mp4)<br>*(Click to play)* |
+|                                              **iOS (iPhone 13 Pro)**                                               |                                   **Android (Tablet Split-View)**                                   |
+|:------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------:|
+| [![iOS Demo](docs/media/ios_list.png)](https://youtube.com/shorts/vyEKjGYQUwk?feature=share)<br>*(Click to watch)* | [![Android Demo](docs/media/android_split.png)](https://youtu.be/Gl_nvL1POxg)<br>*(Click to watch)* |
 
 > *Note: On macOS (Apple Silicon), the Scanner feature is automatically disabled to prevent hardware
 crashes, defaulting to a Gallery picker.*
