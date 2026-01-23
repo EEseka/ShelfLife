@@ -108,12 +108,10 @@ fun OnboardingScreen(
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                 isProcessing = true
                 scope.launch {
-                    runCatching {
+                    val permissionState =
                         permissionController.requestPermission(Permission.NOTIFICATIONS)
-                    }
-                    // Navigate REGARDLESS of the outcome or crash above.
                     // Navigation will happen automatically via MainViewModel's reactive state
-                    onAction(OnboardingAction.OnGetStartedClick)
+                    onAction(OnboardingAction.OnGetStartedClick(permissionState))
                 }
             }
         }

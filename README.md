@@ -1,35 +1,72 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# ShelfLife 🍎
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+**ShelfLife** is a production-grade food inventory and expiry tracking application built with *
+*Kotlin Multiplatform (KMP)** and **Compose Multiplatform**.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+It demonstrates a unified codebase running natively on **Android** and **iOS**, featuring
+offline-first data synchronization, adaptive layouts for Tablets/Laptops, and platform-specific
+hardware handling.
 
-### Build and Run Android Application
+![Banner](art/app_logo_foreground.png)
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+## 🎥 Demo Reel
 
-### Build and Run iOS Application
+See ShelfLife in action on both platforms.
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+|                        **iOS (iPhone 13 Pro)**                        |                        **Android (Tablet Split-View)**                        |
+|:---------------------------------------------------------------------:|:-----------------------------------------------------------------------------:|
+| [**▶️ Watch iOS Demo**](docs/media/ios_demo.mp4)<br>*(Click to play)* | [**▶️ Watch Android Demo**](docs/media/android_demo.mp4)<br>*(Click to play)* |
 
----
+> *Note: On macOS (Apple Silicon), the Scanner feature is automatically disabled to prevent hardware
+crashes, defaulting to a Gallery picker.*
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 📸 Screenshots
+
+### Mobile Experience (iOS)
+
+|                       Onboarding                       |                  Authentication                  |                   Pantry List                    |                    Item Detail                     |                       Insights                       |
+|:------------------------------------------------------:|:------------------------------------------------:|:------------------------------------------------:|:--------------------------------------------------:|:----------------------------------------------------:|
+| <img src="docs/media/ios_onboarding.png" width="180"/> | <img src="docs/media/ios_auth.png" width="180"/> | <img src="docs/media/ios_list.png" width="180"/> | <img src="docs/media/ios_detail.png" width="180"/> | <img src="docs/media/ios_insights.png" width="180"/> |
+
+### Adaptive Experience (Android Tablet & ChromeOS)
+
+|              Split View (List + Detail)               |                   Dashboard & Insights                   |                         Settings                         |
+|:-----------------------------------------------------:|:--------------------------------------------------------:|:--------------------------------------------------------:|
+| <img src="docs/media/android_split.png" width="350"/> | <img src="docs/media/android_insights.png" width="350"/> | <img src="docs/media/android_settings.png" width="350"/> |
+
+## 🚀 Key Features
+
+* **Cross-Platform Architecture:** 100% Shared UI and Logic using Compose Multiplatform.
+* **Adaptive UI:** Responsive layouts that switch between **Vertical** (Phones), **Split-View** (
+  Tablets), and **Constrained Center** (macOS/Chromebooks).
+* **Smart Inventory:** Track expiry dates, quantities, and storage locations.
+* **Product Data Integration:** fetches nutritional data via the **OpenFoodFacts API**.
+* **Hardware Aware:**
+    * *Mobile:* Uses `KScan` for barcode scanning.
+    * *macOS (Apple Silicon):* Detects desktop environment to safely disable unsupported camera
+      hardware and fallback to file pickers.
+* **Offline-First Sync:** Built with **Room Database** (Local) and **Firebase Firestore** (Remote).
+  Works seamlessly without internet.
+* **Insights Engine:** Visual analytics of consumption habits using Donut charts.
+
+## 🛠 Tech Stack
+
+* **Language:** Kotlin (KMP)
+* **UI:** Compose Multiplatform (Material 3)
+* **Architecture:** MVI (Model-View-Intent) + Clean Architecture
+* **Dependency Injection:** Koin
+* **Navigation:** JetBrains Navigation Compose
+* **Local DB:** Room (SQLite)
+* **Remote DB & Auth:** Firebase Firestore & Auth (Google Sign-In)
+* **API:** OpenFoodFacts API (Ktor)
+* **Hardware:** KScan (Barcode), CameraX / AVFoundation
+
+## 🏗️ Building the Project
+
+1. **Clone the repo:** `git clone https://github.com/eeseka/ShelfLife.git`
+2. **Secrets:**
+    * Add `google-services.json` to `composeApp/` (Android).
+    * Add `GoogleService-Info.plist` to `iosApp/iosApp/` (iOS).
+3. **Build:**
+    * Android: Run via Android Studio (Supports Phones, Tablets, ChromeOS).
+    * iOS: Open `iosApp.xcodeproj` in Xcode or run via Android Studio (Supports iPhone, iPad, Mac).

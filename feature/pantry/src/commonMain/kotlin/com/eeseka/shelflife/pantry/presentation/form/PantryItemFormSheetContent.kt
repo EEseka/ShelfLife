@@ -305,13 +305,18 @@ fun PantryItemFormSheetContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
+
+        val isButtonEnabled = when (state.mode) {
+            PantryFormMode.Create -> state.isFormValid && !state.isCompressingImage && !isSaving
+            PantryFormMode.Edit -> state.isFormValid && state.hasChanges && !state.isCompressingImage && !isSaving
+        }
         Button(
             onClick = {
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.Confirm)
                 focusManager.clearFocus()
                 onAction(PantryFormAction.OnSaveClick)
             },
-            enabled = state.isFormValid && state.hasChanges && !state.isCompressingImage && !isSaving,
+            enabled = isButtonEnabled,
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Row(
