@@ -70,8 +70,7 @@ class FirebaseAuthService(
             Firebase.auth.signOut()
             Result.Success(Unit)
         } catch (e: Exception) {
-            e.printStackTrace()
-            shelfLifeLogger.warn("Error signing out: ${e.message}")
+            shelfLifeLogger.error("Error signing out: ${e.message}", e)
             Result.Failure(DataError.LocalStorage.UNKNOWN)
         }
     }

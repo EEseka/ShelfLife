@@ -32,6 +32,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.design_system.theme.ShelfLifeTheme
+import com.eeseka.shelflife.shared.presentation.util.currentDeviceConfiguration
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -58,6 +59,58 @@ fun InsightListShimmer() {
         end = Offset(x = translateAnim.value, y = translateAnim.value)
     )
 
+    val config = currentDeviceConfiguration()
+
+    if (config.isMobile) {
+        // --- Mobile Layout (Single Column) ---
+        MobileShimmerLayout(brush)
+    } else {
+        // --- Tablet/Wide Layout (Split View) ---
+        Row(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Left Pane Shimmer (Summary + Charts)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Filter Row Shimmer
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    repeat(3) {
+                        Box(modifier = Modifier.height(32.dp).width(80.dp).clip(RoundedCornerShape(8.dp)).background(brush))
+                    }
+                }
+                // Summary Card Shimmer
+                Box(modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(12.dp)).background(brush))
+                // Health Stats Shimmer
+                Box(modifier = Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(12.dp)).background(brush))
+            }
+
+            // Right Pane Shimmer (History List)
+            Column(modifier = Modifier.weight(1.5f)) {
+                Box(modifier = Modifier.height(24.dp).width(120.dp).clip(RoundedCornerShape(4.dp)).background(brush))
+                LazyColumn(
+                    contentPadding = PaddingValues(top = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(6) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(80.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(brush)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MobileShimmerLayout(brush: Brush) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),

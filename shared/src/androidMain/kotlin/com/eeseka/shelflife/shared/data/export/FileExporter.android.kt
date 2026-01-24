@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import com.eeseka.shelflife.shared.R.string.export_pantry_data_chooser_title
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-actual class FileExporter(private val context: Context) {
+actual class FileExporter(private val context: Context, private val logger: ShelfLifeLogger) {
     actual suspend fun exportFile(fileName: String, content: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
@@ -37,7 +38,7 @@ actual class FileExporter(private val context: Context) {
 
                 true // Success
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("File Export Failed", e)
                 false // Failed
             }
         }

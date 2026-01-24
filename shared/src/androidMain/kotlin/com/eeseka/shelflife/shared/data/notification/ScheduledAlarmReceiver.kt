@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.eeseka.shelflife.shared.R
 import com.eeseka.shelflife.shared.domain.database.local.LocalPantryStorageService
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.notification.NotificationLogic
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,7 @@ import kotlin.time.ExperimentalTime
 class ScheduledAlarmReceiver : BroadcastReceiver(), KoinComponent {
 
     private val localStorage: LocalPantryStorageService by inject()
+    private val logger: ShelfLifeLogger by inject()
 
     companion object {
         private const val CHANNEL_ID = "expiry_alerts"
@@ -67,7 +69,7 @@ class ScheduledAlarmReceiver : BroadcastReceiver(), KoinComponent {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("AlarmReceiver Error", e)
             } finally {
                 pendingResult.finish()
             }
@@ -156,7 +158,7 @@ class ScheduledAlarmReceiver : BroadcastReceiver(), KoinComponent {
                     BitmapFactory.decodeStream(url.openConnection().getInputStream())
                 if (downloadedBitmap != null) largeIconBitmap = downloadedBitmap
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("AlarmReceiver Error", e)
             }
         }
 
@@ -182,7 +184,7 @@ class ScheduledAlarmReceiver : BroadcastReceiver(), KoinComponent {
         try {
             notificationManager.notify(notificationId, builder.build())
         } catch (e: SecurityException) {
-            e.printStackTrace()
+            logger.error("AlarmReceiver Error", e)
         }
     }
 

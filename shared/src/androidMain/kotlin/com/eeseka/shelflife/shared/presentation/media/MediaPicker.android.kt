@@ -127,8 +127,7 @@ class MediaPickerAndroid(private val context: Context) : MediaPicker {
             val file = File.createTempFile("camera_", ".jpg", directory)
             val authority = "${context.packageName}.fileprovider"
             FileProvider.getUriForFile(context, authority, file)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
         }
     }
@@ -146,8 +145,7 @@ class MediaPickerAndroid(private val context: Context) : MediaPicker {
                 inputStream.copyTo(outputStream)
             }
             file
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
         }
     }

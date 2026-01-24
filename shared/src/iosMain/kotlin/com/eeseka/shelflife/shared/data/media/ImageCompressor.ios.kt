@@ -1,5 +1,6 @@
 package com.eeseka.shelflife.shared.data.media
 
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,9 @@ import platform.UIKit.UIGraphicsImageRendererFormat
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
 
-actual class ImageCompressor {
+actual class ImageCompressor(
+    private val logger: ShelfLifeLogger
+) {
 
     private companion object {
         const val MAX_WIDTH = 1080.0
@@ -71,7 +74,7 @@ actual class ImageCompressor {
                 }
                 null
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("Image Compression Failed: ${e.message}", e)
                 null
             }
         }

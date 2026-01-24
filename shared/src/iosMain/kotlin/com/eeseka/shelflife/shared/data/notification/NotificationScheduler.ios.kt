@@ -1,5 +1,6 @@
 package com.eeseka.shelflife.shared.data.notification
 
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.notification.NotificationLogic
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import kotlinx.datetime.LocalDateTime
@@ -22,7 +23,9 @@ import shelflife.shared.generated.resources.notification_title
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-actual class NotificationScheduler {
+actual class NotificationScheduler(
+    private val logger: ShelfLifeLogger
+) {
 
     @OptIn(ExperimentalTime::class)
     actual suspend fun scheduleDaily(time: LocalTime, items: List<PantryItem>) {
@@ -107,7 +110,7 @@ actual class NotificationScheduler {
             val request = UNNotificationRequest.requestWithIdentifier(requestId, content, trigger)
 
             center.addNotificationRequest(request) { error ->
-                if (error != null) println("ShelfLife iOS Error: ${error.localizedDescription}")
+                if (error != null) logger.error("ShelfLife iOS Error: ${error.localizedDescription}")
             }
         }
     }

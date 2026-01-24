@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.AlarmManagerCompat
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import com.eeseka.shelflife.shared.domain.pantry.PantryItem
 import kotlinx.datetime.LocalTime
 import java.util.Calendar
 
 actual class NotificationScheduler(
-    private val context: Context
+    private val context: Context,
+    private val logger: ShelfLifeLogger
 ) {
     companion object {
         private const val DAILY_ALARM_ID = 1001
@@ -61,7 +63,7 @@ actual class NotificationScheduler(
                 )
             }
         } catch (e: SecurityException) {
-            e.printStackTrace()
+            logger.error("NotificationScheduler Error (SecurityException)", e)
         }
     }
 

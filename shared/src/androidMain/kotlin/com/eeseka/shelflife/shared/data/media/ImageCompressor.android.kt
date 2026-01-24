@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.core.graphics.scale
 import androidx.core.net.toUri
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -17,11 +17,10 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import kotlin.math.roundToInt
 
-actual class ImageCompressor(private val context: Context) {
+actual class ImageCompressor(private val context: Context, private val logger: ShelfLifeLogger) {
 
     private companion object {
         const val MAX_WIDTH = 1080
-        const val TAG = "ImageCompressor"
     }
 
     actual suspend fun compress(contentPath: String, thresholdBytes: Long): String? {
@@ -42,7 +41,7 @@ actual class ImageCompressor(private val context: Context) {
                         val uri = cleanPath.toUri()
                         return context.contentResolver.openInputStream(uri)
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error opening stream", e)
+                        logger.error("Error opening stream", e)
                         return null
                     }
                 }
@@ -52,7 +51,7 @@ actual class ImageCompressor(private val context: Context) {
 
                 val boundsStream = openStream()
                 if (boundsStream == null) {
-                    Log.e(TAG, "ABORT: Stream was null during bounds check")
+                    logger.error("ABORT: Stream was null during bounds check")
                     return@withContext null
                 }
 
@@ -61,7 +60,7 @@ actual class ImageCompressor(private val context: Context) {
                 }
 
                 if (options.outWidth == -1 || options.outHeight == -1) {
-                    Log.e(TAG, "ABORT: Failed to decode image bounds")
+                    logger.error("ABORT: Failed to decode image bounds")
                     return@withContext null
                 }
 
@@ -72,7 +71,7 @@ actual class ImageCompressor(private val context: Context) {
                 // Decode Bitmap
                 val decodeStream = openStream()
                 if (decodeStream == null) {
-                    Log.e(TAG, "ABORT: Stream was null during actual decode")
+                    logger.error("ABORT: Stream was null during actual decode")
                     return@withContext null
                 }
 
@@ -81,7 +80,7 @@ actual class ImageCompressor(private val context: Context) {
                 }
 
                 if (bitmap == null) {
-                    Log.e(TAG, "ABORT: BitmapFactory returned null bitmap")
+                    logger.error("ABORT: BitmapFactory returned null bitmap")
                     return@withContext null
                 }
 
@@ -99,7 +98,7 @@ actual class ImageCompressor(private val context: Context) {
                             bitmap = scaledBitmap
                         }
                     } catch (e: OutOfMemoryError) {
-                        Log.e(TAG, "OOM during scaling, using original", e)
+                        logger.error("OOM during scaling, using original", e)
                     }
                 }
 
@@ -131,7 +130,7 @@ actual class ImageCompressor(private val context: Context) {
                 resultPath
 
             } catch (e: Throwable) {
-                Log.e(TAG, "UNHANDLED CRASH", e)
+                logger.error("UNHANDLED CRASH", e)
                 null
             }
         }

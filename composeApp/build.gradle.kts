@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -58,10 +60,6 @@ kotlin {
             implementation(project(":shared"))
             implementation(project(":di"))
             implementation(project(":navigation"))
-
-            // FUTURE: When you create them, you will uncomment these:
-            // implementation(project(":feature:auth"))
-            // implementation(project(":core:data"))
         }
     }
 }
@@ -70,6 +68,12 @@ android {
     namespace = "com.eeseka.shelflife"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    val keystoreProperties = Properties()
+    val keystorePropertiesFile = rootProject.file("local.properties")
+    if (keystorePropertiesFile.exists()) {
+        keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    }
+
     defaultConfig {
         applicationId = "com.eeseka.shelflife"
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -77,6 +81,21 @@ android {
         versionCode = 1
         versionName = "1.0"
     }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["key.alias"] as String?
+            keyPassword = keystoreProperties["key.password"] as String?
+            storePassword = keystoreProperties["store.password"] as String?
+
+            // resolving the file path
+            val storeFilePath = keystoreProperties["store.file"] as String?
+            if (storeFilePath != null) {
+                storeFile = rootProject.file(storeFilePath)
+            }
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -84,7 +103,16 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            // Sign the APK with your key
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

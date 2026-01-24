@@ -1,7 +1,6 @@
 package com.eeseka.shelflife.shared.data.dto
 
 import kotlinx.serialization.Serializable
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)

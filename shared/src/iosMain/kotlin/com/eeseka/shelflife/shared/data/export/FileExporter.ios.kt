@@ -1,5 +1,6 @@
 package com.eeseka.shelflife.shared.data.export
 
+import com.eeseka.shelflife.shared.domain.logging.ShelfLifeLogger
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,9 @@ import platform.Foundation.writeToFile
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 
-actual class FileExporter {
+actual class FileExporter(
+    private val logger: ShelfLifeLogger
+) {
     @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
     actual suspend fun exportFile(fileName: String, content: String): Boolean {
         return withContext(Dispatchers.Default) {
@@ -41,7 +44,7 @@ actual class FileExporter {
                 }
                 true // Success
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("File Export Failed", e)
                 false // Failed
             }
         }

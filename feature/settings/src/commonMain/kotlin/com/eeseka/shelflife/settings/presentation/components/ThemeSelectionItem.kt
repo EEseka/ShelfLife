@@ -68,8 +68,7 @@ fun ThemeSelectionItem(currentTheme: AppTheme, onThemeSelected: (AppTheme) -> Un
             Spacer(Modifier.width(12.dp))
             Text(
                 text = stringResource(Res.string.app_theme),
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                maxLines = 1
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
             )
         }
 

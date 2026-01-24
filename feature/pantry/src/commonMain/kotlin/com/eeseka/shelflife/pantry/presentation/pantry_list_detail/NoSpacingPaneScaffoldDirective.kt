@@ -3,7 +3,6 @@ package com.eeseka.shelflife.pantry.presentation.pantry_list_detail
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eeseka.shelflife.shared.presentation.util.DeviceConfiguration
