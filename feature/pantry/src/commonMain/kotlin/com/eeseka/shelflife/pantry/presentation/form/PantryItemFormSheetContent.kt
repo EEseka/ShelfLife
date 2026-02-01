@@ -354,6 +354,7 @@ fun PantryItemFormSheetContent(
             onDismiss = { showImageSourceDialog = false },
             onCameraClick = {
                 scope.launch {
+                    focusManager.clearFocus()
                     showImageSourceDialog = false
                     val result = mediaPicker.captureImage()
                     if (result != null) {
@@ -363,6 +364,7 @@ fun PantryItemFormSheetContent(
             },
             onGalleryClick = {
                 scope.launch {
+                    focusManager.clearFocus()
                     showImageSourceDialog = false
                     val result = mediaPicker.pickImage()
                     if (result != null) {

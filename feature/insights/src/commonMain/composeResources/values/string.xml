@@ -17,6 +17,8 @@
     <string name="wasted">Wasted</string>
     <string name="empty_insights_title">No history yet</string>
     <string name="empty_insights_description">Mark items as consumed or wasted to see your stats grow! 📈</string>
+    <string name="no_insights_found">No insights found</string>
+    <string name="try_different_filter">Try adjusting your time filter! 🔍</string>
     <string name="health_info">Health Information</string>
     <string name="diet_quantity">Diet Quality (Consumed Items)</string>
     <string name="a_healthy">A (Healthy)</string>

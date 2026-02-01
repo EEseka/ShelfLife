@@ -11,7 +11,6 @@ data class InsightState(
     val selectedTimeFilter: TimeFilter = TimeFilter.ALL_TIME,
 
     // --- Derived Stats ---
-    val totalItems: Int = 0,
     val consumedCount: Int = 0,
     val wastedCount: Int = 0,
     val consumedPercentage: Float = 0f, // 0.0 to 1.0

@@ -144,13 +144,9 @@ fun PantryListScreen(
                     modifier = Modifier.fillMaxSize()
                 ) { targetState ->
                     when (targetState) {
-                        PantryScreenState.Loading -> {
-                            PantryListShimmer()
-                        }
+                        PantryScreenState.Loading -> PantryListShimmer()
 
-                        PantryScreenState.Empty -> {
-                            EmptyPantryView(isSearchActive = false)
-                        }
+                        PantryScreenState.Empty -> EmptyPantryView(isFiltered = false)
 
                         PantryScreenState.Grid -> {
                             LazyVerticalGrid(
@@ -210,7 +206,7 @@ fun PantryListScreen(
                                         Box(
                                             modifier = Modifier.animateItem().padding(top = 48.dp)
                                         ) {
-                                            EmptyPantryView(isSearchActive = true)
+                                            EmptyPantryView(isFiltered = true)
                                         }
                                     }
                                 } else {

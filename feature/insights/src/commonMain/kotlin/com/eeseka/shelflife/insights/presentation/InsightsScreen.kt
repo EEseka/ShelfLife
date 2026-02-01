@@ -52,6 +52,7 @@ import com.eeseka.shelflife.insights.presentation.components.InsightFilterRow
 import com.eeseka.shelflife.insights.presentation.components.InsightItemCard
 import com.eeseka.shelflife.insights.presentation.components.InsightListShimmer
 import com.eeseka.shelflife.insights.presentation.components.InsightSummaryCard
+import com.eeseka.shelflife.insights.presentation.util.TimeFilter
 import com.eeseka.shelflife.shared.design_system.components.ShelfLifeScaffold
 import com.eeseka.shelflife.shared.presentation.util.DeviceConfiguration
 import com.eeseka.shelflife.shared.presentation.util.ObserveAsEvents
@@ -120,7 +121,8 @@ fun InsightsScreen(
     ) {
         val contentState = when {
             state.isLoading -> InsightScreenState.Loading
-            state.totalItems == 0 -> InsightScreenState.Empty
+            state.items.isEmpty() && state.selectedTimeFilter == TimeFilter.ALL_TIME -> InsightScreenState.Empty
+            state.items.isEmpty() -> InsightScreenState.EmptyFiltered
             else -> InsightScreenState.Content
         }
 
@@ -132,7 +134,23 @@ fun InsightsScreen(
         ) { targetState ->
             when (targetState) {
                 InsightScreenState.Loading -> InsightListShimmer()
-                InsightScreenState.Empty -> EmptyInsightsView()
+
+                InsightScreenState.Empty -> EmptyInsightsView(isFiltered = false)
+
+                InsightScreenState.EmptyFiltered -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize().padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        InsightFilterRow(
+                            selectedTimeFilter = state.selectedTimeFilter,
+                            onFilterChange = { onAction(InsightAction.OnTimeFilterChange(it)) }
+                        )
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            EmptyInsightsView(isFiltered = true)
+                        }
+                    }
+                }
 
                 InsightScreenState.Content -> {
                     InsightContentAdaptive(
@@ -317,7 +335,7 @@ private fun InsightContentAdaptive(
 }
 
 private enum class InsightScreenState {
-    Loading, Empty, Content
+    Loading, Empty, EmptyFiltered, Content
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

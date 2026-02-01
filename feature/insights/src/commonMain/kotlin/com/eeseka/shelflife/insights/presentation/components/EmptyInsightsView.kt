@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,27 +30,39 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import shelflife.feature.insights.generated.resources.Res
 import shelflife.feature.insights.generated.resources.empty_insights_description
 import shelflife.feature.insights.generated.resources.empty_insights_title
+import shelflife.feature.insights.generated.resources.no_insights_found
+import shelflife.feature.insights.generated.resources.try_different_filter
 
 private const val ANIMATION_EMPTY_STATS = "empty_stats.json"
 
 @Composable
-fun EmptyInsightsView() {
+fun EmptyInsightsView(isFiltered: Boolean) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/$ANIMATION_EMPTY_STATS").decodeToString()
         )
     }
 
-    Box(
-        modifier = Modifier
+    val boxModifier = if (isFiltered) {
+        Modifier.fillMaxWidth().padding(32.dp)
+    } else {
+        Modifier.fillMaxSize().padding(32.dp)
+    }
+
+    val columnModifier = if (isFiltered) {
+        Modifier.fillMaxWidth()
+    } else {
+        Modifier
             .fillMaxSize()
-            .padding(32.dp)
-    ) {
+            .verticalScroll(rememberScrollState()) // Handle own scrolling
+    }
+
+    Box(modifier = boxModifier) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
                 .widthIn(max = 600.dp)
-                .verticalScroll(rememberScrollState()),
+                .then(columnModifier),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -64,14 +77,16 @@ fun EmptyInsightsView() {
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = stringResource(Res.string.empty_insights_title),
+                    text = if (isFiltered) stringResource(Res.string.no_insights_found)
+                    else stringResource(Res.string.empty_insights_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(Res.string.empty_insights_description),
+                    text = if (isFiltered) stringResource(Res.string.try_different_filter)
+                    else stringResource(Res.string.empty_insights_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -85,6 +100,14 @@ fun EmptyInsightsView() {
 @Composable
 private fun EmptyInsightsViewPreview() {
     ShelfLifeTheme {
-        EmptyInsightsView()
+        EmptyInsightsView(isFiltered = false)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyInsightsViewPreview2() {
+    ShelfLifeTheme {
+        EmptyInsightsView(isFiltered = true)
     }
 }

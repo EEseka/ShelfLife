@@ -55,17 +55,16 @@ class InsightViewModel(
         }
 
         // Calculate Stats
-        val total = filtered.size
         val consumed = filtered.count { it.status == InsightStatus.CONSUMED }
         val wasted = filtered.count { it.status == InsightStatus.WASTED }
-        val percentage = if (total > 0) consumed.toFloat() / total.toFloat() else 0f
+        val percentage =
+            if (filtered.isNotEmpty()) consumed.toFloat() / filtered.size.toFloat() else 0f
         val nutriStats = filtered.getNutriScoreDistribution()
         val processedCount = filtered.getUltraProcessedCount()
         val wastedEcoCount = filtered.getWastedGoodEcoCount()
 
         currentState.copy(
             items = filtered,
-            totalItems = total,
             consumedCount = consumed,
             wastedCount = wasted,
             consumedPercentage = percentage,

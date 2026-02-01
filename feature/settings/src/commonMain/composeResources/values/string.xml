@@ -48,7 +48,7 @@
     <string name="export_failed">Export failed"</string>
     <string name="about">About</string>
     <string name="privacy_policy">Privacy Policy</string>
-    <string name="app_version_label">v1.0.0</string>
+    <string name="app_version_label">v1.0.1</string>
     <string name="user_id_copied">User ID copied to clipboard</string>
     <string name="made_with_love">Made with ❤️ by Eseka Emmanuel</string>
 </resources>

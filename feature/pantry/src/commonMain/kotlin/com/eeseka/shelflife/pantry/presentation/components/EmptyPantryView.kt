@@ -36,7 +36,7 @@ import shelflife.feature.pantry.generated.resources.try_different
 private const val ANIMATION_EMPTY_BOX = "empty_box.json"
 
 @Composable
-fun EmptyPantryView(isSearchActive: Boolean) {
+fun EmptyPantryView(isFiltered: Boolean) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/$ANIMATION_EMPTY_BOX").decodeToString()
@@ -45,13 +45,13 @@ fun EmptyPantryView(isSearchActive: Boolean) {
 
     // If we are searching, we are inside a LazyGrid (which already scrolls).
     // If we are NOT searching, we are standalone and need to handle landscape scrolling ourselves.
-    val boxModifier = if (isSearchActive) {
+    val boxModifier = if (isFiltered) {
         Modifier.fillMaxWidth().padding(32.dp)
     } else {
         Modifier.fillMaxSize().padding(32.dp)
     }
 
-    val columnModifier = if (isSearchActive) {
+    val columnModifier = if (isFiltered) {
         Modifier.fillMaxWidth()
     } else {
         Modifier
@@ -79,7 +79,7 @@ fun EmptyPantryView(isSearchActive: Boolean) {
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = if (isSearchActive) stringResource(Res.string.no_items_found)
+                    text = if (isFiltered) stringResource(Res.string.no_items_found)
                     else stringResource(Res.string.empty_pantry_title),
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -87,7 +87,7 @@ fun EmptyPantryView(isSearchActive: Boolean) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = if (isSearchActive) stringResource(Res.string.try_different)
+                    text = if (isFiltered) stringResource(Res.string.try_different)
                     else stringResource(Res.string.empty_pantry_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -102,7 +102,7 @@ fun EmptyPantryView(isSearchActive: Boolean) {
 @Composable
 private fun EmptyPantryViewPreview() {
     ShelfLifeTheme {
-        EmptyPantryView(isSearchActive = false)
+        EmptyPantryView(isFiltered = false)
     }
 }
 
@@ -110,6 +110,6 @@ private fun EmptyPantryViewPreview() {
 @Composable
 private fun EmptyPantryViewPreview2() {
     ShelfLifeTheme {
-        EmptyPantryView(isSearchActive = true)
+        EmptyPantryView(isFiltered = true)
     }
 }
